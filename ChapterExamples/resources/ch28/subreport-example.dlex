@@ -1,0 +1,28 @@
+<document xmlns="https://www.dynamicpdf.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.dynamicpdf.com https://www.dynamicpdf.com/schemas/DLEX20.xsd" version="2.0" author="" keywords="" subject="" title="" id="Document1">
+  <report id="Report1" dataName="Employees" pageSize="letter" pageOrientation="portrait" leftMargin="50" topMargin="50" rightMargin="50" bottomMargin="50">
+    <template id="Template1"/>
+    <header id="Header1" height="0"/>
+    <detail id="Detail1" autoSplit="true" height="100">
+      <recordBox id="RecordBox1" x="75" y="6" width="100" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="EmployeeID"/>
+      <label id="Label1" x="0" y="6" width="71" height="14" underline="false" text="EmployeeID:"/>
+      <recordArea id="RecordArea1" x="0" y="24" width="186" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false">
+        <text>#LastName#, #FirstName#</text>
+      </recordArea>
+      <subReport id="Subreport1" x="300" y="39" width="250" dataName="Territories">
+        <header id="Header2" height="20">
+          <label id="Label3" x="4" y="3" width="30" height="14" underline="false" text="ID"/>
+          <label id="Label4" x="97" y="3" width="100" height="14" underline="false" text="Description"/>
+          <line id="Line2" x1="4" y1="18" x2="203" y2="18"/>
+        </header>
+        <detail id="Detail2" autoSplit="false" height="25">
+          <recordBox id="RecordBox2" x="5" y="4" width="75" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="TerritoryID"/>
+          <recordBox id="RecordBox3" x="101" y="3" width="100" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="TerritoryDescription"/>
+        </detail>
+        <footer id="Footer2" height="0"/>
+      </subReport>
+      <label id="Label2" x="216" y="5" width="100" height="14" underline="false" text="Territiories:"/>
+      <line id="Line3" x1="1" y1="98" x2="513" y2="98"/>
+    </detail>
+    <footer id="Footer1" height="0"/>
+  </report>
+</document>

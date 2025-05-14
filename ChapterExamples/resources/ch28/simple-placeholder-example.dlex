@@ -1,0 +1,6 @@
+<document xmlns="https://www.dynamicpdf.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.dynamicpdf.com https://www.dynamicpdf.com/schemas/DLEX20.xsd" version="2.0" author="" keywords="" subject="" title="" id="Document1">
+  <page id="Page1" pageSize="letter" pageOrientation="portrait" leftMargin="50" topMargin="50" rightMargin="50" bottomMargin="50">
+    <placeholder id="Placeholder1" x="31" y="194" width="458" height="172"/>
+    <label id="Label1" x="163" y="99" width="175" height="33" fontSize="24" underline="false" text="My Cover Page"/>
+  </page>
+</document>

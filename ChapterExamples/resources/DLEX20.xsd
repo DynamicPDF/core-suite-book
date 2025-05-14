@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema targetNamespace="http://www.dynamicpdf.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.dynamicpdf.com" xmlns:NS="http://www.dynamicpdf.com" elementFormDefault="qualified">
+  <xsd:element name="document">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="openTypeFont" type="OpenTypeFont" minOccurs="0" maxOccurs="unbounded" />
+        <xsd:element name="fontFamily" type="FontFamily" minOccurs="0" maxOccurs="unbounded" />        
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element name="page" type="Page" />
+          <xsd:element name="report" type="Report" />
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="author" type="xsd:string" />
+      <xsd:attribute name="id" type="xsd:ID" use="required" />
+      <xsd:attribute name="keywords" type="xsd:string" />
+      <xsd:attribute name="subject" type="xsd:string" />
+      <xsd:attribute name="title" type="xsd:string" />
+      <xsd:attribute name="tag" type="xsd:boolean" />
+      <xsd:attribute name="version" type="xsd:float" use="required" fixed="2.0" />
+    </xsd:complexType>
+  </xsd:element>
+  <!-- Complex Types -->
+  <xsd:complexType name="AreaLayoutElement">
+    <xsd:complexContent>
+      <xsd:extension base="XYLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="height" type="positiveFloat" use="required" />
+        <xsd:attribute name="width" type="positiveFloat" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Barcode">
+    <xsd:complexContent>
+      <xsd:extension base="RotatingLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="align" type="align" default="center" />
+        <xsd:attribute name="color" type="color" default="black" />
+        <xsd:attribute name="vAlign" type="vAlign" default="center" />
+        <xsd:attribute name="value" type="xsd:string" />
+        <xsd:attribute name="xDimension" type="positiveFloatOrAuto" default="auto" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="LinearBarcode">
+    <xsd:complexContent>
+      <xsd:extension base="Barcode">
+        <xsd:sequence />
+        <xsd:attribute name="gs1DataBarType" type="gs1DataBarType" default="omnidirectional" />		
+        <xsd:attribute name="textColor" type="color" default="black" />
+        <xsd:attribute name="type" type="linearBarcodeType" use="required" />
+        <xsd:attribute name="showText" type="xsd:boolean" default="false" />
+        <xsd:attribute name="supplementValue" type="xsd:string" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="AztecBarcode">
+    <xsd:complexContent>
+      <xsd:extension base="Barcode">
+        <xsd:sequence />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Pdf417Barcode">
+    <xsd:complexContent>
+      <xsd:extension base="Barcode">
+        <xsd:sequence />
+        <xsd:attribute name="columns" type="positiveInt" use="required" />        
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="QRCode">
+    <xsd:complexContent>
+      <xsd:extension base="Barcode">
+        <xsd:sequence />
+        <xsd:attribute name="version" type="qrCodeVersion" default="auto" />        
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="DataMatrixBarcode">
+    <xsd:complexContent>
+      <xsd:extension base="Barcode">
+        <xsd:sequence />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="ConditionalReportPart">
+    <xsd:sequence>
+      <xsd:group ref="LayoutElements" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="condition" type="xsd:string" use="required" />
+    <xsd:attribute name="height" type="nonNegativeFloat" default="0" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+    <xsd:attribute name="inheritElements" type="xsd:boolean" default="false" />
+  </xsd:complexType>
+  <xsd:complexType name="ConditionalTemplate">
+    <xsd:sequence>
+      <xsd:group ref="LayoutElements" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="condition" type="xsd:string" use="required" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+    <xsd:attribute name="inheritElements" type="xsd:boolean" default="false" />
+    <xsd:attribute name="templatePageNumber" type="positiveInt" default="1" />
+    <xsd:attribute name="templatePath" type="xsd:normalizedString" default="" />
+  </xsd:complexType>
+  <xsd:complexType name="ContentGroup">
+    <xsd:complexContent>
+      <xsd:extension base="AreaLayoutElement">
+        <xsd:sequence>
+          <xsd:group ref="ContentGroupLayoutElements" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="splittable" type="xsd:boolean" default="false" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="DetailReportPart">
+    <xsd:sequence>
+      <xsd:group ref="DetailLayoutElements" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="autoSplit" type="xsd:boolean" default="false" />
+    <xsd:attribute name="height" type="nonNegativeFloat" use="required" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+  </xsd:complexType>  
+  <xsd:complexType name="ExtendedTextualLayoutElement">
+    <xsd:complexContent>
+      <xsd:extension base="TextualLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="autoLeading" type="xsd:boolean" default="true" />
+        <xsd:attribute name="cleanParagraphBreaks" type="xsd:boolean" default="true" />
+        <xsd:attribute name="expandable" type="xsd:boolean" default="false" />
+        <xsd:attribute name="leading" type="xsd:float" default="14" />
+        <xsd:attribute name="paragraphIndent" type="xsd:float" default="0" />
+        <xsd:attribute name="paragraphSpacing" type="xsd:float" default="0" />
+        <xsd:attribute name="rightToLeft" type="xsd:boolean" default="false" />
+        <xsd:attribute name="splittable" type="xsd:boolean" default="false" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="FontFamily">
+    <xsd:attribute name="bold" type="xsd:Name" use="required" />
+    <xsd:attribute name="boldItalic" type="xsd:Name" use="required" />
+    <xsd:attribute name="italic" type="xsd:Name" use="required" />
+    <xsd:attribute name="name" type="xsd:Name" use="required" />
+    <xsd:attribute name="regular" type="xsd:Name" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="FooterReportPart">
+    <xsd:sequence>
+      <xsd:group ref="LayoutElements" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="conditionalFooter" type="ConditionalReportPart" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="height" type="nonNegativeFloat" default="0" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="FormattedRecordArea">
+    <xsd:complexContent>
+      <xsd:extension base="RotatingLayoutElement">
+        <xsd:sequence>
+          <xsd:element name="initialStyle" type="FormattedRecordAreaStyle" minOccurs="0" />
+          <xsd:element name="text" type="xsd:string" />
+        </xsd:sequence>
+        <xsd:attribute name="expandable" type="xsd:boolean" default="false" />
+        <xsd:attribute name="splittable" type="xsd:boolean" default="false" />
+        <xsd:attribute name="vAlign" type="vAlign" default="top" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="FormattedRecordAreaStyle">
+    <xsd:sequence>
+      <xsd:element name="font" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="color" type="color" default="black" />
+          <xsd:attribute name="face" type="font" default="helvetica" />
+          <xsd:attribute name="size" type="positiveFloat" default="12" />
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="line" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="leading" type="nonNegativeFloat" default="14" />
+          <xsd:attribute name="leadingType" default="auto">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="atLeast" />
+                <xsd:enumeration value="auto" />
+                <xsd:enumeration value="exactly" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="paragraph" minOccurs="0">
+        <xsd:complexType>
+          <xsd:sequence />
+          <xsd:attribute name="align" default="left">
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="center" />
+                <xsd:enumeration value="justify" />
+                <xsd:enumeration value="left" />
+                <xsd:enumeration value="right" />
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+          <xsd:attribute name="cleanParagraphBreaks" type="xsd:boolean" default="true" />
+          <xsd:attribute name="indent" type="xsd:float" default="0" />
+          <xsd:attribute name="leftIndent" type="xsd:float" default="0" />
+          <xsd:attribute name="preserveWhiteSpace" type="xsd:boolean" default="true" />
+          <xsd:attribute name="rightIndent" type="xsd:float" default="0" />
+          <xsd:attribute name="spacingAfter" type="xsd:float" default="0" />
+          <xsd:attribute name="spacingBefore" type="xsd:float" default="0" />
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>  
+  <xsd:complexType name="HeaderReportPart">
+    <xsd:sequence>
+      <xsd:group ref="LayoutElements" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="conditionalHeader" type="ConditionalReportPart" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="height" type="nonNegativeFloat" default="0" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="Image">
+    <xsd:complexContent>
+      <xsd:extension base="RotatingLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="align" type="align" default="center" />
+        <xsd:attribute name="altText" type="xsd:string" default="" />
+        <xsd:attribute name="dataName" type="xsd:normalizedString" />
+        <xsd:attribute name="dynamicPath" type="xsd:boolean" default="false" />
+        <xsd:attribute name="expandToFit" type="xsd:boolean" default="true" />
+        <xsd:attribute name="path" type="xsd:normalizedString" />
+        <xsd:attribute name="scaleX" type="nonNegativeFloat" default="1" />
+        <xsd:attribute name="scaleY" type="nonNegativeFloat" default="1" />
+        <xsd:attribute name="shrinkToFit" type="xsd:boolean" default="true" />
+        <xsd:attribute name="vAlign" type="vAlign" default="center" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>  
+  <xsd:complexType name="Label">
+    <xsd:complexContent>
+      <xsd:extension base="TextualLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="rightToLeft" type="xsd:boolean" default="false" />
+        <xsd:attribute name="text" type="xsd:string" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Line">
+    <xsd:complexContent>
+      <xsd:extension base="LayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="cap" type="lineCap" default="projectedSquare" />
+        <xsd:attribute name="color" type="dynamicColor" default="black" />
+        <xsd:attribute name="style" type="lineStyle" default="solid" />
+        <xsd:attribute name="width" type="nonNegativeFloat" default="1" />
+        <xsd:attribute name="x1" type="xsd:float" use="required" />
+        <xsd:attribute name="x2" type="xsd:float" use="required" />
+        <xsd:attribute name="y1" type="xsd:float" use="required" />
+        <xsd:attribute name="y2" type="xsd:float" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Link">
+    <xsd:complexContent>
+      <xsd:extension base="AreaLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="url" type="xsd:normalizedString" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="NestedDetailReportPart">
+    <xsd:sequence>
+      <xsd:group ref="NestedDetailLayoutElements" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="autoSplit" type="xsd:boolean" default="false" />
+    <xsd:attribute name="height" type="nonNegativeFloat" use="required" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="NestedSubReport">
+    <xsd:sequence>      
+      <xsd:element name="header" type="HeaderReportPart" />
+      <xsd:element name="detail" type="NestedDetailReportPart" />
+      <xsd:element name="footer" type="FooterReportPart" />
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+    <xsd:attribute name="rowSpacing" type="nonNegativeFloat" default="0" />
+    <xsd:attribute name="width" type="positiveFloat" use="required" />
+    <xsd:attribute name="x" type="xsd:float" use="required" />
+    <xsd:attribute name="y" type="xsd:float" use="required" />
+    <xsd:attribute name="groupBy" type="xsd:string" />
+    <xsd:attribute name="dataName" type="xsd:normalizedString" />
+  </xsd:complexType>
+  <xsd:complexType name="NoSplitZone">
+    <xsd:complexContent>
+      <xsd:extension base="LayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="top" type="xsd:float" use="required" />
+        <xsd:attribute name="bottom" type="xsd:float" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="OpenTypeFont">
+    <xsd:attribute name="name" type="xsd:Name" use="required" />
+    <xsd:attribute name="path" type="xsd:normalizedString" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="Page">
+    <xsd:sequence>      
+      <xsd:group ref="LayoutElements" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="bottomMargin" type="nonNegativeFloat" default="50" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+    <xsd:attribute name="leftMargin" type="nonNegativeFloat" default="50" />
+    <xsd:attribute name="pageHeight" type="positiveFloat" />
+    <xsd:attribute name="pageOrientation" type="pageOrientation" default="portrait" />
+    <xsd:attribute name="pageSize" type="pageSize" default="letter" />
+    <xsd:attribute name="pageWidth" type="positiveFloat" />
+    <xsd:attribute name="rightMargin" type="nonNegativeFloat" default="50" />
+    <xsd:attribute name="templatePageNumber" type="positiveInt" default="1" />
+    <xsd:attribute name="templatePath" type="xsd:normalizedString" default="" />
+    <xsd:attribute name="topMargin" type="nonNegativeFloat" default="50" />
+  </xsd:complexType>
+  <xsd:complexType name="PageBreak">
+    <xsd:complexContent>
+      <xsd:extension base="LayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="y" type="xsd:float" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="PageNumberingLabel">
+    <xsd:complexContent>
+      <xsd:extension base="Label">
+        <xsd:sequence />
+        <xsd:attribute name="pageOffset" type="xsd:int" default="0" />
+        <xsd:attribute name="pageTotalOffset" type="xsd:int" default="0" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Placeholder">
+    <xsd:complexContent>
+      <xsd:extension base="AreaLayoutElement">
+        <xsd:sequence />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>  
+  <xsd:complexType name="RecordArea">
+    <xsd:complexContent>
+      <xsd:extension base="ExtendedTextualLayoutElement">
+        <xsd:sequence>
+          <xsd:element name="text" type="xsd:string" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="RecordBox">
+    <xsd:complexContent>
+      <xsd:extension base="ExtendedTextualLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="dataFormat" type="xsd:string" />
+        <xsd:attribute name="dataName" type="xsd:normalizedString" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Rectangle">
+    <xsd:complexContent>
+      <xsd:extension base="RotatingLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="borderColor" type="dynamicColor" default="black" />
+        <xsd:attribute name="borderStyle" type="lineStyle" default="solid" />
+        <xsd:attribute name="borderWidth" type="nonNegativeFloat" default="1" />
+        <xsd:attribute name="cornerRadius" type="nonNegativeFloat" default="0" />
+        <xsd:attribute name="fillColor" type="dynamicColor" />
+        <xsd:attribute name="showAlternateRow" type="alternateRow" default="all" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Report">
+    <xsd:sequence>      
+      <xsd:element name="template" type="Template" minOccurs="0" />
+      <xsd:element name="header" type="HeaderReportPart" />
+      <xsd:element name="detail" type="DetailReportPart" />
+      <xsd:element name="footer" type="FooterReportPart" />
+    </xsd:sequence>
+    <xsd:attribute name="bottomMargin" type="nonNegativeFloat" default="50" />
+    <xsd:attribute name="columns" type="positiveInt" default="1" />
+    <xsd:attribute name="columnSpacing" type="nonNegativeFloat" default="0" />
+    <xsd:attribute name="columnLayout" type="columnLayout" default="verticalUneven" />
+    <xsd:attribute name="dataName" type="xsd:normalizedString" />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+    <xsd:attribute name="leftMargin" type="nonNegativeFloat" default="50" />
+    <xsd:attribute name="pageHeight" type="positiveFloat" />
+    <xsd:attribute name="pageOrientation" type="pageOrientation" default="portrait" />
+    <xsd:attribute name="pageSize" type="pageSize" default="letter" />
+    <xsd:attribute name="pageWidth" type="positiveFloat" />
+    <xsd:attribute name="rightMargin" type="nonNegativeFloat" default="50" />
+    <xsd:attribute name="rowSpacing" type="nonNegativeFloat" default="0" />
+    <xsd:attribute name="topMargin" type="nonNegativeFloat" default="50" />
+  </xsd:complexType>
+  <xsd:complexType name="LayoutElement">
+    <xsd:sequence />
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+  </xsd:complexType>
+  <xsd:complexType name="RotatingLayoutElement">
+    <xsd:complexContent>
+      <xsd:extension base="AreaLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="angle" type="angle" default="0" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="SoftBreak">
+    <xsd:complexContent>
+      <xsd:extension base="LayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="y" type="xsd:float" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>  
+  <xsd:complexType name="SubReport">
+    <xsd:complexContent>
+      <xsd:extension base="NestedSubReport">
+        <xsd:attribute name="columns" type="positiveInt" default="1" />
+        <xsd:attribute name="columnLayout" type="columnLayout" default="verticalEven" />
+        <xsd:attribute name="columnSpacing" type="nonNegativeFloat" default="0" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Symbol">
+    <xsd:complexContent>
+      <xsd:extension base="AreaLayoutElement">
+        <xsd:attribute name="color" type="color" default="black" />
+        <xsd:attribute name="customFont" type="dynamicFont" default="zapfDingbats" />
+        <xsd:attribute name="customCharacter" type="char" default="A" />
+        <xsd:attribute name="visibilityCondition" type="xsd:string" use="optional" />
+        <xsd:attribute name="size" type="positiveFloat" default="12" />
+        <xsd:attribute name="symbolType" type="symbolType" default="check1" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <xsd:complexType name="Template">
+    <xsd:sequence>
+      <xsd:group ref="LayoutElements" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="conditionalTemplate" type="ConditionalTemplate" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:ID" use="required" />
+    <xsd:attribute name="templatePageNumber" type="positiveInt" default="1" />
+    <xsd:attribute name="templatePath" type="xsd:normalizedString" default="" />
+  </xsd:complexType>
+  <xsd:complexType name="TextualLayoutElement">
+    <xsd:complexContent>
+      <xsd:extension base="RotatingLayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="align" type="textAlign" default="left" />
+        <xsd:attribute name="font" type="dynamicFont" default="helvetica" />
+        <xsd:attribute name="fontSize" type="positiveFloat" default="12" />
+        <xsd:attribute name="textColor" type="dynamicColor" default="black" />
+        <xsd:attribute name="underline" type="xsd:boolean" default="false" />
+        <xsd:attribute name="vAlign" type="vAlign" default="top" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>  
+  <xsd:complexType name="XYLayoutElement">
+    <xsd:complexContent>
+      <xsd:extension base="LayoutElement">
+        <xsd:sequence />
+        <xsd:attribute name="x" type="xsd:float" use="required" />
+        <xsd:attribute name="y" type="xsd:float" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  <!-- Groups -->
+  <xsd:group name="DetailLayoutElements">
+    <xsd:choice>
+      <xsd:group ref="LayoutElements" />
+      <xsd:element name="contentGroup" type="ContentGroup" />
+      <xsd:element name="noSplitZone" type="NoSplitZone" />
+      <xsd:element name="pageBreak" type="PageBreak" />
+      <xsd:element name="softBreak" type="SoftBreak" />
+      <xsd:element name="subReport" type="SubReport" />
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="ContentGroupLayoutElements">
+    <xsd:choice>
+      <xsd:group ref="LayoutElements" />
+      <xsd:element name="contentGroup" type="ContentGroup" />
+      <xsd:element name="subReport" type="SubReport" />
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="NestedDetailLayoutElements">
+    <xsd:choice>
+      <xsd:group ref="LayoutElements" />
+      <xsd:element name="contentGroup" type="ContentGroup" />
+      <xsd:element name="noSplitZone" type="NoSplitZone" />
+      <xsd:element name="pageBreak" type="PageBreak" />
+      <xsd:element name="softBreak" type="SoftBreak" />
+      <xsd:element name="subReport" type="NestedSubReport" />
+    </xsd:choice>
+  </xsd:group>
+  <xsd:group name="LayoutElements">
+    <xsd:choice>
+	    <xsd:element name="aztecBarcode" type="AztecBarcode" />
+	    <xsd:element name="dataMatrixBarcode" type="DataMatrixBarcode" />
+      <xsd:element name="formattedRecordArea" type="FormattedRecordArea" />
+      <xsd:element name="image" type="Image" />
+      <xsd:element name="label" type="Label" />
+      <xsd:element name="line" type="Line" />
+	    <xsd:element name="linearBarcode" type="LinearBarcode" />
+      <xsd:element name="pageNumberingLabel" type="PageNumberingLabel" />
+	    <xsd:element name="pdf417Barcode" type="Pdf417Barcode" />
+      <xsd:element name="placeholder" type="Placeholder" />
+	    <xsd:element name="qrCode" type="QRCode" />
+      <xsd:element name="recordArea" type="RecordArea" />
+      <xsd:element name="recordBox" type="RecordBox" />
+      <xsd:element name="rectangle" type="Rectangle" />
+      <xsd:element name="symbol" type="Symbol" />
+    </xsd:choice>
+  </xsd:group>
+  <!-- Simple Types -->
+  <xsd:simpleType name="align">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="center" />
+      <xsd:enumeration value="left" />
+      <xsd:enumeration value="right" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="alternateRow">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="all" />
+      <xsd:enumeration value="even" />
+      <xsd:enumeration value="odd" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="angle">
+    <xsd:restriction base="xsd:float">
+      <xsd:minExclusive value="-360" />
+      <xsd:maxExclusive value="360" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="linearBarcodeType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="australiaPost" />					
+      <xsd:enumeration value="codabar" />
+      <xsd:enumeration value="code128" />
+      <xsd:enumeration value="code2of5" />
+      <xsd:enumeration value="code3of9" />
+      <xsd:enumeration value="code11" />
+      <xsd:enumeration value="code93" />					
+      <xsd:enumeration value="deutschePostIdentcode" />
+      <xsd:enumeration value="deutschePostLeitcode" />
+      <xsd:enumeration value="ean13" />
+      <xsd:enumeration value="ean13Supplement2" />
+      <xsd:enumeration value="ean13Supplement5" />
+      <xsd:enumeration value="ean14" />
+      <xsd:enumeration value="ean8" />
+      <xsd:enumeration value="ean8Supplement2" />
+      <xsd:enumeration value="ean8Supplement5" />
+      <xsd:enumeration value="gs1Databar" />
+      <xsd:enumeration value="iata2of5" />
+      <xsd:enumeration value="intelligentMailBarcode" />
+      <xsd:enumeration value="interleaved2of5" />
+      <xsd:enumeration value="isbn" />
+      <xsd:enumeration value="isbnSupplement2" />
+      <xsd:enumeration value="isbnSupplement5" />
+      <xsd:enumeration value="ismn" />
+      <xsd:enumeration value="ismnSupplement2" />
+      <xsd:enumeration value="ismnSupplement5" />
+      <xsd:enumeration value="issn" />
+      <xsd:enumeration value="issnSupplement2" />
+      <xsd:enumeration value="issnSupplement5" />
+      <xsd:enumeration value="ift14" />
+      <xsd:enumeration value="kix" />      
+      <xsd:enumeration value="msiBarcode" />					
+      <xsd:enumeration value="postnet" />					
+      <xsd:enumeration value="rm4SCCBarcode" />
+      <xsd:enumeration value="singaporePost" />
+      <xsd:enumeration value="upcVersionA" />
+      <xsd:enumeration value="upcVersionASupplement2" />
+      <xsd:enumeration value="upcVersionASupplement5" />
+      <xsd:enumeration value="upcVersionE" />
+      <xsd:enumeration value="upcVersionESupplement2" />
+      <xsd:enumeration value="upcVersionESupplement5" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="gs1DataBarType">
+	<xsd:restriction base="xsd:string">
+		<xsd:enumeration value="omnidirectional" />
+		<xsd:enumeration value="limited" />
+		<xsd:enumeration value="expanded" />
+	</xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="qrCodeVersion">
+	<xsd:restriction base="xsd:string">
+    <xsd:enumeration value="auto" />
+		<xsd:enumeration value="version1" />
+    <xsd:enumeration value="version2" />
+    <xsd:enumeration value="version3" />
+    <xsd:enumeration value="version4" />
+    <xsd:enumeration value="version5" />
+    <xsd:enumeration value="version6" />
+    <xsd:enumeration value="version7" />
+    <xsd:enumeration value="version8" />
+    <xsd:enumeration value="version9" />
+    <xsd:enumeration value="version10" />
+    <xsd:enumeration value="version11" />
+    <xsd:enumeration value="version12" />
+    <xsd:enumeration value="version13" />
+    <xsd:enumeration value="version14" />
+    <xsd:enumeration value="version15" />
+    <xsd:enumeration value="version16" />
+    <xsd:enumeration value="version17" />
+    <xsd:enumeration value="version18" />
+    <xsd:enumeration value="version19" />
+    <xsd:enumeration value="version20" />
+    <xsd:enumeration value="version21" />
+    <xsd:enumeration value="version22" />
+    <xsd:enumeration value="version23" />
+    <xsd:enumeration value="version24" />
+    <xsd:enumeration value="version25" />
+    <xsd:enumeration value="version26" />
+    <xsd:enumeration value="version27" />
+    <xsd:enumeration value="version28" />
+    <xsd:enumeration value="version29" />
+    <xsd:enumeration value="version30" />
+    <xsd:enumeration value="version31" />
+    <xsd:enumeration value="version32" />
+    <xsd:enumeration value="version33" />
+    <xsd:enumeration value="version34" />
+    <xsd:enumeration value="version35" />
+    <xsd:enumeration value="version36" />
+    <xsd:enumeration value="version37" />
+    <xsd:enumeration value="version38" />
+    <xsd:enumeration value="version39" />		
+    <xsd:enumeration value="version40" />        
+	</xsd:restriction>
+  </xsd:simpleType>  
+  <xsd:simpleType name="char">
+    <xsd:restriction base="xsd:string">
+      <xsd:maxLength value ="1" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="color">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="aliceBlue|antiqueWhite|aqua|aquamarine|azure|beige|bisque|black|blanchedAlmond|blue|blueViolet|brown|burlyWood|cadetBlue|chartreuse|chocolate|coral|cornflowerBlue|cornsilk|crimson|cyan|darkBlue|darkCyan|darkGoldenRod|darkGray|darkGreen|darkKhaki|darkMagenta|darkOliveGreen|darkorange|darkOrchid|darkRed|darkSalmon|darkSeaGreen|darkSlateBlue|darkSlateGray|darkTurquoise|darkViolet|deepPink|deepSkyBlue|dimGray|dodgerBlue|feldspar|fireBrick|floralWhite|forestGreen|fuchsia|gainsboro|ghostWhite|gold|goldenRod|gray|green|greenYellow|honeyDew|hotPink|indianRed|indigo|ivory|khaki|lavender|lavenderBlush|lawnGreen|lemonChiffon|lightBlue|lightCoral|lightCyan|lightGoldenRodYellow|lightGrey|lightGreen|lightPink|lightSalmon|lightSeaGreen|lightSkyBlue|lightSlateBlue|lightSlateGray|lightSteelBlue|lightYellow|lime|limeGreen|linen|magenta|maroon|mediumAquaMarine|mediumBlue|mediumOrchid|mediumPurple|mediumSeaGreen|mediumSlateBlue|mediumSpringGreen|mediumTurquoise|mediumVioletRed|midnightBlue|mintCream|mistyRose|moccasin|navajoWhite|navy|oldLace|olive|oliveDrab|orange|orangeRed|orchid|paleGoldenRod|paleGreen|paleTurquoise|paleVioletRed|papayaWhip|peachPuff|peru|pink|plum|powderBlue|purple|red|rosyBrown|royalBlue|saddleBrown|salmon|sandyBrown|seaGreen|seaShell|sienna|silver|skyBlue|slateBlue|slateGray|snow|springGreen|steelBlue|tan|teal|thistle|tomato|turquoise|violet|violetRed|wheat|white|whiteSmoke|yellow|yellowGreen|(#)?[A-F,a-f,0-9]{6}|gray\(((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)\)|rgb\(((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)(,((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)){2}\)|cmyk\(((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)(,((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)){3}\)" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="dynamicColor">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="IF\(.+\)|aliceBlue|antiqueWhite|aqua|aquamarine|azure|beige|bisque|black|blanchedAlmond|blue|blueViolet|brown|burlyWood|cadetBlue|chartreuse|chocolate|coral|cornflowerBlue|cornsilk|crimson|cyan|darkBlue|darkCyan|darkGoldenRod|darkGray|darkGreen|darkKhaki|darkMagenta|darkOliveGreen|darkorange|darkOrchid|darkRed|darkSalmon|darkSeaGreen|darkSlateBlue|darkSlateGray|darkTurquoise|darkViolet|deepPink|deepSkyBlue|dimGray|dodgerBlue|feldspar|fireBrick|floralWhite|forestGreen|fuchsia|gainsboro|ghostWhite|gold|goldenRod|gray|green|greenYellow|honeyDew|hotPink|indianRed|indigo|ivory|khaki|lavender|lavenderBlush|lawnGreen|lemonChiffon|lightBlue|lightCoral|lightCyan|lightGoldenRodYellow|lightGrey|lightGreen|lightPink|lightSalmon|lightSeaGreen|lightSkyBlue|lightSlateBlue|lightSlateGray|lightSteelBlue|lightYellow|lime|limeGreen|linen|magenta|maroon|mediumAquaMarine|mediumBlue|mediumOrchid|mediumPurple|mediumSeaGreen|mediumSlateBlue|mediumSpringGreen|mediumTurquoise|mediumVioletRed|midnightBlue|mintCream|mistyRose|moccasin|navajoWhite|navy|oldLace|olive|oliveDrab|orange|orangeRed|orchid|paleGoldenRod|paleGreen|paleTurquoise|paleVioletRed|papayaWhip|peachPuff|peru|pink|plum|powderBlue|purple|red|rosyBrown|royalBlue|saddleBrown|salmon|sandyBrown|seaGreen|seaShell|sienna|silver|skyBlue|slateBlue|slateGray|snow|springGreen|steelBlue|tan|teal|thistle|tomato|turquoise|violet|violetRed|wheat|white|whiteSmoke|yellow|yellowGreen|(#)?[A-F,a-f,0-9]{6}|gray\(((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)\)|rgb\(((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)(,((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)){2}\)|cmyk\(((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)(,((0+)?1((\.0+)?)?|(0+)?((\.[0-9]+)?)?)){3}\)" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="dynamicFont">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="IF\(.+\)|[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9](:(100|100italic|200|200italic|300|300italic|400|400italic|500|500italic|600|600italic|700|700italic|800|800italic|900|900italic|bold|bolditalic|italic|regular))?" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="columnLayout">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="horizontal" />
+      <xsd:enumeration value="verticalUneven" />
+      <xsd:enumeration value="verticalEven" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="font">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="[a-zA-Z][a-zA-Z0-9 ]*[a-zA-Z0-9](:(100|100italic|200|200italic|300|300italic|400|400italic|500|500italic|600|600italic|700|700italic|800|800italic|900|900italic|bold|bolditalic|italic|regular))?" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="lineCap">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="butt" />
+      <xsd:enumeration value="projectedSquare" />
+      <xsd:enumeration value="rounded" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="lineStyle">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="dash|dashLarge|dashSmall|dots|solid|\[(([0-9]+((\.[0-9]+)?)?)|(\.[0-9]+))((,(([0-9]+((\.[0-9]+)?)?)|(\.[0-9]+)))+)?\](([0-9]+((\.[0-9]+)?)?)|(\.[0-9]+))?" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="nonNegativeFloat">
+    <xsd:restriction base="xsd:float">
+      <xsd:minInclusive value="0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pageOrientation">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="landscape" />
+      <xsd:enumeration value="portrait" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="pageSize">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="a3" />
+      <xsd:enumeration value="a4" />
+      <xsd:enumeration value="a5" />
+      <xsd:enumeration value="a6" />
+      <xsd:enumeration value="b3" />
+      <xsd:enumeration value="b4" />
+      <xsd:enumeration value="b5" />
+      <xsd:enumeration value="b5Jis" />
+      <xsd:enumeration value="custom" />
+      <xsd:enumeration value="doublePostcard" />
+      <xsd:enumeration value="envelope10" />
+      <xsd:enumeration value="envelopeB5" />
+      <xsd:enumeration value="envelopeC5" />
+      <xsd:enumeration value="envelopeDL" />
+      <xsd:enumeration value="envelopeMonarch" />
+      <xsd:enumeration value="executive" />
+      <xsd:enumeration value="folio" />
+      <xsd:enumeration value="legal" />
+      <xsd:enumeration value="letter" />
+      <xsd:enumeration value="postcard" />
+      <xsd:enumeration value="prc16K" />
+      <xsd:enumeration value="prc32K" />
+      <xsd:enumeration value="quatro" />
+      <xsd:enumeration value="statement" />
+      <xsd:enumeration value="tabloid" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="positiveFloat">
+    <xsd:restriction base="xsd:float">
+      <xsd:minExclusive value="0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="positiveFloatOrAuto">
+    <xsd:restriction base="xsd:normalizedString">
+      <xsd:pattern value="auto|[0-9]+(\.[0-9]+)?" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="positiveInt">
+    <xsd:restriction base="xsd:int">
+      <xsd:minExclusive value="0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="symbolType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="check1" />
+      <xsd:enumeration value="check2" />
+      <xsd:enumeration value="circle" />
+      <xsd:enumeration value="custom" />
+      <xsd:enumeration value="square" />
+      <xsd:enumeration value="x1" />
+      <xsd:enumeration value="x2" />
+      <xsd:enumeration value="x3" />
+      <xsd:enumeration value="x4" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="textAlign">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="center" />
+      <xsd:enumeration value="fullJustify" />
+      <xsd:enumeration value="justify" />
+      <xsd:enumeration value="left" />
+      <xsd:enumeration value="right" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="vAlign">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="bottom" />
+      <xsd:enumeration value="center" />
+      <xsd:enumeration value="top" />
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

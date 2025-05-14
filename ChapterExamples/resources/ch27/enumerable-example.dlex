@@ -1,0 +1,11 @@
+<document xmlns="https://www.dynamicpdf.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.dynamicpdf.com https://www.dynamicpdf.com/schemas/DLEX20.xsd" version="2.0" author="" keywords="" subject="" title="" id="Document1">
+  <report id="Report1" dataName="Chapters" pageSize="letter" pageOrientation="portrait" leftMargin="50" topMargin="50" rightMargin="50" bottomMargin="50">
+    <template id="Template1"/>
+    <header id="Header1" height="0"/>
+    <detail id="Detail1" autoSplit="false" height="50">
+      <recordBox id="RecordBox1" x="10" y="3" width="100" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="Title"/>
+      <recordBox id="RecordBox2" x="118" y="3" width="208" height="43" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="true" rightToLeft="false" splittable="false" dataName="Summary"/>
+    </detail>
+    <footer id="Footer1" height="0"/>
+  </report>
+</document>

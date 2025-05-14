@@ -1,0 +1,26 @@
+<document xmlns="https://www.dynamicpdf.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.dynamicpdf.com https://www.dynamicpdf.com/schemas/DLEX20.xsd" version="2.0" author="" keywords="" subject="" title="" id="Document1">
+  <report id="Report1" dataName="Employees" pageSize="letter" pageOrientation="portrait" leftMargin="50" topMargin="50" rightMargin="50" bottomMargin="50">
+    <template id="Template1"/>
+    <header id="Header1" height="25"/>
+    <detail id="Detail1" autoSplit="false" height="100">
+      <recordArea id="RecordArea1" x="0" y="5" width="312" height="19" fontSize="16" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false">
+        <text>#LastName#, #FirstName#</text>
+      </recordArea>
+      <subReport id="Subreport1" x="17" y="40" width="400" dataName="Territories">
+        <header id="Header2" height="20">
+          <rectangle id="Rectangle1" x="0" y="2" width="394" height="17" borderColor="black" borderWidth="0" fillColor="lightBlue"/>
+          <label id="Label3" x="2" y="4" width="100" height="14" underline="false" text="Territories"/>
+        </header>
+        <detail id="Detail2" autoSplit="false" height="25">
+          <recordBox id="RecordBox2" x="2" y="5" width="100" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="TerritoryDescription"/>
+        </detail>
+        <footer id="Footer2" height="0"/>
+      </subReport>
+      <recordArea id="RecordArea2" x="408" y="4" width="100" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false">
+        <text>ID: #EmployeeID#</text>
+      </recordArea>
+      <rectangle id="Rectangle2" x="12" y="36" width="411" height="54" borderColor="black" cornerRadius="4"/>
+    </detail>
+    <footer id="Footer1" height="50"/>
+  </report>
+</document>

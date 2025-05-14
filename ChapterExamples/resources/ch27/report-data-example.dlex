@@ -1,0 +1,30 @@
+<document xmlns="https://www.dynamicpdf.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.dynamicpdf.com https://www.dynamicpdf.com/schemas/DLEX20.xsd" version="2.0" author="" keywords="" subject="" title="" id="Document1">
+  <report id="Report1" dataName="Orders" pageSize="letter" pageOrientation="portrait" leftMargin="50" topMargin="50" rightMargin="50" bottomMargin="50">
+    <template id="Template1"/>
+    <header id="Header1" height="20">
+      <label id="Label1" x="2" y="1" width="55" height="14" underline="false" text="OrderID"/>
+      <label id="Label2" x="60" y="1" width="65" height="14" underline="false" text="OrderDate"/>
+      <label id="Label3" x="143" y="1" width="57" height="14" underline="false" text="ProductID"/>
+      <label id="Label4" x="205" y="1" width="128" height="14" underline="false" text="ProductName"/>
+      <label id="Label5" x="336" y="1" width="57" height="14" underline="false" text="UnitPrice"/>
+      <label id="Label6" x="398" y="1" width="46" height="14" underline="false" text="Quantity"/>
+      <label id="Label7" x="455" y="1" width="48" height="14" align="right" underline="false" text="Total"/>
+      <line id="Line1" x1="1" y1="18" x2="514" y2="18"/>
+    </header>
+    <detail id="Detail1" autoSplit="false" height="20">
+      <recordBox id="RecordBox1" x="4" y="1" width="51" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="OrderID"/>
+      <recordBox id="RecordBox2" x="58" y="2" width="80" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="OrderDate"/>
+      <recordBox id="RecordBox3" x="143" y="2" width="47" height="14" align="center" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="ProductID"/>
+      <recordBox id="RecordBox4" x="202" y="3" width="128" height="14" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="true" rightToLeft="false" splittable="false" dataName="ProductName"/>
+      <recordBox id="RecordBox5" x="335" y="2" width="53" height="14" align="right" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="UnitPrice" dataFormat="$#,###.00"/>
+      <recordBox id="RecordBox6" x="395" y="2" width="50" height="14" align="right" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="Quantity"/>
+      <recordBox id="RecordBox7" x="452" y="2" width="51" height="14" align="right" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="UnitPrice * Quantity" dataFormat="$###,###.00"/>
+    </detail>
+    <footer id="Footer1" height="20">
+      <conditionalFooter id="ConditionalFooter1" condition="lastpage">
+        <recordBox id="RecordBox8" x="374" y="2" width="133" height="14" align="right" underline="false" autoLeading="true" cleanParagraphBreaks="true" expandable="false" rightToLeft="false" splittable="false" dataName="sum(UnitPrice*Quantity)" dataFormat="$###,###.00"/>
+        <label id="Label8" x="271" y="1" width="100" height="14" underline="false" text="Total:"/>
+      </conditionalFooter>
+    </footer>
+  </report>
+</document>
