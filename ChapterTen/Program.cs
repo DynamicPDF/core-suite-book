@@ -8,6 +8,7 @@ namespace ChapterTen
         public static void Main()
         {
             FileUtility.CreatePath("output/ch10");
+            AutoLayoutExampleChart.Create(FileUtility.GetPath("output/ch10/autolayout-out.pdf"));
             SimpleChartExample.Create(FileUtility.GetPath("output/ch10/"));
             PieChartExample.Create(FileUtility.GetPath("output/ch10/"));
             SimpleLegendExample.Create(FileUtility.GetPath("output/ch10/"));

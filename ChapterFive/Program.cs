@@ -16,6 +16,8 @@ namespace ChapterFive
 
             RectangleExample.Create(FileUtility.GetPath("output/ch5/rectangle-out.pdf"));
             PathExample.Create(FileUtility.GetPath("output/ch5/paths-out.pdf"));
+
+            AutoLayoutShapesExample.Create(FileUtility.GetPath("output/ch5/autolayout-out.pdf"));
         }
     }
 }

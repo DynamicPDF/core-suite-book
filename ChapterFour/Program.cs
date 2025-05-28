@@ -22,6 +22,7 @@ namespace ChapterFour
             CombinedListExample.Create(FileUtility.GetPath("output/ch4/combined-list-out.pdf"));
             ListOverflowexample.Create(FileUtility.GetPath("output/ch4/overflow-list-out.pdf"));
             TextWatermarkExample.Create(FileUtility.GetPath("output/ch4/text-watermark-out.pdf"));
+            AutoLayoutExample.Create(FileUtility.GetPath("output/ch4/autolayout-out.pdf"));
         }
     }
 }

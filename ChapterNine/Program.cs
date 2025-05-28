@@ -8,6 +8,7 @@ namespace ChapterNine
         static void Main(string[] args)
         {
             FileUtility.CreatePath("output/ch9");
+            AutoLayoutTableExample.Create(FileUtility.GetPath("output/ch9/autolayout-out.pdf"));
             SimpleTableExample.Create(FileUtility.GetPath("output/ch9/simple-table-out.pdf"));
             SimpleTableFormatExample.Create(FileUtility.GetPath("output/ch9/simple-format-table-out.pdf"));
             TableOverflow.Create(FileUtility.GetPath("output/ch9/"));
