@@ -14,6 +14,7 @@ namespace ChapterTwentyFour
             FormFillingExample.Modify(FileUtility.GetPath("../ChapterExamples/resources/Ch24/"), FileUtility.GetPath("output/ch24/"));
             FormModificationExample.Modify(FileUtility.GetPath("../ChapterExamples/resources/Ch24/"), FileUtility.GetPath("output/ch24/"));
             FormFlattening.Modify(FileUtility.GetPath("../ChapterExamples/resources/Ch24/"), FileUtility.GetPath("output/ch24/"));
+            FormReadOnly.Modify(FileUtility.GetPath("../ChapterExamples/resources/Ch24/"), FileUtility.GetPath("output/ch24/"));
         }
     }
 }
