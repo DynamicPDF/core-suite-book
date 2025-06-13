@@ -4,6 +4,8 @@
 
 The following GitHub project contains the manuscript: **DynamicPDF Core Suite for .NET by Example** as a PDF Document and all related source-code for the book's examples.
 
+DynamicPDF Core Suite for .NET by Example - PDF.
+
 ## Table Of Contents
 
 1 Introduction 19
