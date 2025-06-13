@@ -2,22 +2,41 @@
 
 ![](./book-small.png)
 
-**The DynamicPDF Core Suite for .NET by Example** is a comprehensive guide to using DynamicPDF Core Suite for .NET, focusing on creating, modifying, and managing PDF documents through practical examples that help you master PDF generation and manipulation. Whether you are a beginner or an experienced developer, this book will help you master the art of PDF creation with confidence.
-
 The following GitHub project contains the manuscript: **DynamicPDF Core Suite for .NET by Example** as a PDF Document and all related source-code for the book's examples.
 
 * [DynamicPDF Core Suite for .NET by Example](https://github.com/DynamicPDF/core-suite-book/blob/main/DynamicPDF%20Core%20Suite%20for%20.NET%20By%20Example.pdf) - PDF
 
+## About the Book
+
+<img align="left"  src="./book-small.png">
+**The DynamicPDF Core Suite for .NET by Example** is a comprehensive guide to using DynamicPDF Core Suite for .NET, focusing on creating, modifying, and managing PDF documents through practical examples that help you master PDF generation and manipulation. Whether you are a beginner or an experienced developer, this book will help you master the art of PDF creation with confidence.
+
+* In Part I, Creating PDF Documents, you explore the fundamentals
+  of PDF creation, including document structure, adding pages, using
+  coordinate systems, and integrating HTML layouts. Subsequent chapters
+  discuss working with templates, sections, text, and how to incorporate
+  vector graphics, images, and fonts into your PDF documents.
+  Advanced topics include creating tables and charts, generating barcodes,
+  and managing outlines and bookmarks. You also examine
+  using security measures like encryption, digital signatures, and access
+  control. Part I ends by discussing interactive forms, JavaScript,
+  and event-based interactions.
+* Part II, Modifying PDF Documents, covers modifying PDFs, merging
+  documents, editing outlines, and working with forms.
+* Part III, OtherTopics, covers additional topics, including custom
+  components, report generation, and using DynamicPDF Designer for
+  advanced document layout and automation.
+
 ## Table Of Contents
 
-1 Introduction 19
-1.1 Essentials vs. Standard 20
-1.2 History 20
-1.3 Setup 21
-1.4 The Portable Document Format (PDF) by Adobe 22
-1.5 Creating Your First PDF 23
-1.6 Modifying Your First PDF 25
-1.7 Summary 27
+1 Introduction
+1.1 Essentials vs. Standard
+1.2 History
+1.3 Setup
+1.4 The Portable Document Format (PDF) by Adobe
+1.5 Creating Your First PDF
+1.6 Modifying Your First PDF
+1.7 Summary
 
 **I Creating PDF Documents 29**
 
