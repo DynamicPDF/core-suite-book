@@ -2,6 +2,8 @@
 
 ![](./book-small.png)
 
+**The DynamicPDF Core Suite for .NET by Example** is a comprehensive guide to using DynamicPDF Core Suite for .NET, focusing on creating, modifying, and managing PDF documents through practical examples that help you master PDF generation and manipulation. Whether you are a beginner or an experienced developer, this book will help you master the art of PDF creation with confidence.
+
 The following GitHub project contains the manuscript: **DynamicPDF Core Suite for .NET by Example** as a PDF Document and all related source-code for the book's examples.
 
 * [DynamicPDF Core Suite for .NET by Example](https://github.com/DynamicPDF/core-suite-book/blob/main/DynamicPDF%20Core%20Suite%20for%20.NET%20By%20Example.pdf) - PDF
