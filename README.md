@@ -28,32 +28,31 @@ The following GitHub project contains the manuscript: **DynamicPDF Core Suite fo
 
 ## Table Of Contents
 
-1 Introduction
-1.1 Essentials vs. Standard
-1.2 History
-1.3 Setup
-1.4 The Portable Document Format (PDF) by Adobe
-1.5 Creating Your First PDF
-1.6 Modifying Your First PDF
-1.7 Summary
+* 1 Introduction
+  * 1.1 Essentials vs. Standard
+  * 1.2 History
+  * 1.3 Setup
+  * 1.4 The Portable Document Format (PDF) by Adobe
+  * 1.5 Creating Your First PDF
+  * 1.6 Modifying Your First PDF
+  * 1.7 Summary
 
 **I Creating PDF Documents 29**
 
-2 Documents 31
-2.1 Creating a Document 31
-2.2 Adding Pages 32
-2.3 Coordinate System 35
-2.4 HTML Layout 45
-2.5 Adding Document Properties 47
-2.6 Viewer Preferences 48
-2.7 Summary 49
+2 Documents
+2.1 Creating a Document
+2.2 Adding Pages
+2.3 Coordinate System
+2.4 HTML Layout
+2.5 Adding Document Properties
+2.6 Viewer Preferences
+2.7 Summary
 
-3 Templates and Sections 51
-3.1 Applying Templates 51
-12 james a brannan
-3.2 Sectioning Documents 59
-3.3 A Complete Example 62
-3.4 Summary 63
+3 Templates and Sections
+3.1 Applying Templates
+3.2 Sectioning Documents
+3.3 A Complete Example
+3.4 Summary
 
 4 Text 67
 4.1 Page Elements Namespace 68
