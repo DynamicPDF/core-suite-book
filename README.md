@@ -39,42 +39,39 @@ The following GitHub project contains the manuscript: **DynamicPDF Core Suite fo
 
 **I Creating PDF Documents 29**
 
-2 Documents
-2.1 Creating a Document
-2.2 Adding Pages
-2.3 Coordinate System
-2.4 HTML Layout
-2.5 Adding Document Properties
-2.6 Viewer Preferences
-2.7 Summary
-
-3 Templates and Sections
-3.1 Applying Templates
-3.2 Sectioning Documents
-3.3 A Complete Example
-3.4 Summary
-
-4 Text 67
-4.1 Page Elements Namespace 68
-4.2 Labels 69
-4.3 Text Area 71
-4.4 Formatted Text Area 74
-4.5 HTML Area 75
-4.6 Lists 76
-4.7 Notes 84
-4.8 Page Numbering Labels 86
-4.9 TextWatermark 87
-4.10 Link 89
-4.11 AutoLayout 89
-4.12 Summary 90
-
-5 Vector Graphics 93
-5.1 Lines 93
-5.2 Rectangles 95
-5.3 Circles 96
-5.4 Paths 97
-5.5 AutoLayout 102
-5.6 Summary 103
+* 2 Documents
+  * 2.1 Creating a Document
+  * 2.2 Adding Pages
+  * 2.3 Coordinate System
+  * 2.4 HTML Layout
+  * 2.5 Adding Document Properties
+  * 2.6 Viewer Preferences
+  * 2.7 Summary
+* 3 Templates and Sections
+  * 3.1 Applying Templates
+  * 3.2 Sectioning Documents
+  * 3.3 A Complete Example
+  * 3.4 Summary
+* 4 Text
+  * 4.1 Page Elements Namespace
+  * 4.2 Labels
+  * 4.3 Text Area
+  * 4.4 Formatted Text Area
+  * 4.5 HTML Area
+  * 4.6 Lists
+  * 4.7 Notes
+  * 4.8 Page Numbering Labels
+  * 4.9 TextWatermark
+  * 4.10 Link
+  * 4.11 AutoLayout
+  * 4.12 Summary
+* 5 Vector Graphics 93
+  5.1 Lines 93
+  5.2 Rectangles 95
+  5.3 Circles 96
+  5.4 Paths 97
+  5.5 AutoLayout 102
+  5.6 Summary 103
 
 6 Images 105
 6.1 Image 105
