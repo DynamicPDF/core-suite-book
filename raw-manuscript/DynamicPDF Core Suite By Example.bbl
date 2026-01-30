@@ -1,0 +1,84 @@
+\begin{thebibliography}{13}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[{ceTe Software}(2024)]{cete124}
+{ceTe Software}.
+\newblock {DynamicPDF} {API} {(Self-Hosted)} core features, 2024.
+\newblock URL
+  \url{aws.amazon.com/marketplace/pp/prodview-t6syqoca3u5oe?sr=0-1&ref_=beagle&applicationId=AWSMPContessa}.
+
+\bibitem[{ceTe Software}(n.d.{\natexlab{a}})]{cete125}
+{ceTe Software}.
+\newblock {DynamicPDF} {API}, n.d.{\natexlab{a}}.
+\newblock URL \url{dpdf.io}.
+
+\bibitem[{ceTe Software}(n.d.{\natexlab{b}})]{cete126}
+{ceTe Software}.
+\newblock {DynamicPDF} {API}, n.d.{\natexlab{b}}.
+\newblock URL \url{dpdf.io}.
+
+\bibitem[{ceTe Software}(n.d.{\natexlab{c}})]{cete1288}
+{ceTe Software}.
+\newblock {DynamicPDF} {API} {Expressions}, n.d.{\natexlab{c}}.
+\newblock URL
+  \url{dpdf.io/docs/usersguide/designer/expressions/designer-expressions}.
+
+\bibitem[{ceTe Software}(n.d.{\natexlab{d}})]{cete132}
+{ceTe Software}.
+\newblock {DynamicPDF Layout Engine XML Schema}, n.d.{\natexlab{d}}.
+\newblock URL \url{dpdf.io}.
+
+\bibitem[Corporation(2022)]{microsoft123}
+Microsoft Corporation.
+\newblock Northwind and pubs sample databases for microsoft sql, 2022.
+\newblock URL
+  \url{github.com/Microsoft/sql-server-samples/tree/master/samples/databases/northwind-pubs}.
+
+\bibitem[Google(n.d.)]{Google123}
+Google.
+\newblock Google fonts, n.d.
+\newblock URL \url{fonts.google.com}.
+
+\bibitem[{International Organization for Standardization}(2008)]{iso_pdf1}
+{International Organization for Standardization}.
+\newblock \emph{Document management — Portable document format Part 1 PDF 1.7
+  {ISO} 32000-1:2008}.
+\newblock Vernier, Geneva, Switzerland, 2008.
+\newblock URL \url{https://www.iso.org/standard/51502.html}.
+
+\bibitem[{International Organization for
+  Standardization}(2014)]{iso_central_secretary_systems_2016}
+{International Organization for Standardization}.
+\newblock \emph{{ISO} 14289-1:2014}.
+\newblock Vernier, Geneva, Switzerland, 2014.
+\newblock URL \url{https://www.iso.org/standard/64599.html}.
+
+\bibitem[{International Organization for Standardization}(2020)]{iso_pdf2}
+{International Organization for Standardization}.
+\newblock \emph{Document management — Portable document format Part 2: PDF
+  2.0 ISO 32000-2:2020}.
+\newblock Vernier, Geneva, Switzerland, 2020.
+\newblock URL \url{https://www.iso.org/standard/75839.html}.
+
+\bibitem[LLC(2024)]{brantech123}
+Brannan Technical~Solutions LLC.
+\newblock Dynamicpdf core suite by example book one source code, 2024.
+\newblock URL
+  \url{github.com/jamesabrannan/DynamicPDFCoreSuiteByExampleBookOne}.
+
+\bibitem[Newtonsoft(2024)]{newtonsoft}
+Newtonsoft.
+\newblock Json.net, 2024.
+\newblock URL
+  \url{github.com/jamesabrannan/DynamicPDFCoreSuiteByExampleBookOne}.
+
+\bibitem[veraPDF(n.d.)]{verapdfhome}
+veraPDF.
+\newblock Pdf/a and pdf/ua validation, n.d.
+\newblock URL \url{https://verapdf.org/software/}.
+
+\end{thebibliography}

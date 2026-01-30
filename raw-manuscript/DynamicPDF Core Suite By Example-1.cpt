@@ -1,0 +1,23 @@
+
+\begin{table}
+\begin{tabularx}{\columnwidth}{>{\raggedright\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X}
+\toprule
+ & {\scriptsize 40-bit RC4 } & {\scriptsize 128-bit RC4 } & {\scriptsize 128-bit AES } & {\scriptsize 256-bit AES }\tabularnewline
+ & {\scriptsize\texttt{RC440Security}} & {\scriptsize\texttt{RC4128Security}} & {\scriptsize\texttt{Aes128Security}} & {\scriptsize\texttt{Aes256Security}}\tabularnewline
+\midrule
+{\scriptsize Copy} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Edit} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Print} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Update annotations \& fields} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Set owner password} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Set user password} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Allow accessibility} &  &  & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Allow document assembly} &  &  & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Allow form filling} &  &  & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Allow high resolution printing} &  &  & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+{\scriptsize Allow document components} &  &  & {\scriptsize\Checkmark{}} & {\scriptsize\Checkmark{}}\tabularnewline
+\bottomrule
+\end{tabularx}\protect\caption{Encryption algorithm and allowed restrictions.}\label{tab:User-access-permissions}
+
+\end{table}
+Example^^E^^L 
