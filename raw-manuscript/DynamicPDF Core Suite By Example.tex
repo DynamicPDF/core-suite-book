@@ -22,11 +22,16 @@
 \pdfimageresolution=1200
 \makeatletter
 \usepackage[font=footnotesize]{idxlayout}
-\title[DynamicPDF Core Suite by Example]{\textcolor{white}{DynamicPDF Core Suite for .NET by Example}}
+\title[DynamicPDF Core Suite by Example]{\vspace*{1.25cm}\par\noindent
+\textcolor{white}{DynamicPDF Core Suite for .NET by Example}}
 \usepackage{blindtext}
-\author{James A Brannan}
-\publisher{ceTe Software}
-
+\author{\textcolor{white}{\hspace*{8.0cm}James A Brannan}}
+\publisher{\vspace*{-3cm}ceTe Software}
+\usepackage{hyperref}
+\hypersetup{
+  bookmarksopen=true,
+  bookmarksopenlevel=2
+}
 
 %% Because html converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
@@ -54,34 +59,165 @@
 \usetikzlibrary{calc}
 \usepackage{sectsty}
 \colorlet{WHITE}{white}
+\definecolor{NAVY}{RGB}{35,32,82}
+\definecolor{DPRED}{RGB}{236,28,36}
+\definecolor{DPDARKRED}{RGB}{183,32,46}
+
 \usepackage{wallpaper}
 \usepackage{etoolbox}
 \AtBeginEnvironment{quote}{\par\singlespacing\small}
 \usepackage{graphicx}
 \usepackage[firstpage]{draftwatermark}
 \SetWatermarkLightness{0.25}
-\SetWatermarkVerCenter{750pt}
-\SetWatermarkText{\includegraphics[scale=0.20,angle=-45]{background.png}}
-
+\SetWatermarkAngle{0} % let the image angle control rotation
+\SetWatermarkText{%
+\hspace*{-8cm}
+  \includegraphics[
+ scale=0.70
+  ]{background.png}%
+}
 \makeatother
 
 \usepackage[pages=some, placement=top]{background}
 
-\backgroundsetup{
-scale=1,
-color=black,
-opacity=1,
-angle=0,
-contents={%
-  \includegraphics[width=\paperwidth,height=250pt]{banner.png}
+%%%%%%%%%%%%%%%%%%%% part page %%%%%
+
+% --- Background preset for CHAPTER opening pages (your existing banner setup) ---
+\newcommand{\BgSetupChapter}{%
+  \backgroundsetup{%
+    scale=1,
+    color=black,
+    opacity=1,
+    angle=0,
+    contents={%
+      \includegraphics[width=\paperwidth,height=250pt]{banner.png}%
+    }%
   }%
 }
+
+% --- Background preset for PART divider pages (full page) ---
+\newcommand{\BgSetupPart}{%
+  \backgroundsetup{%
+    scale=1,
+    color=black,
+    opacity=1,
+    angle=0,
+    contents={%
+      \includegraphics[width=\paperwidth,height=\paperheight]{part-bg.png}%
+    }%
+  }%
+}
+
+% --- PART page macro: switches to PART background for one page, then restores CHAPTER background ---
+\newcommand{\DPpart}[2]{% #1=title, #2=label
+  \cleardoublepage
+  \thispagestyle{empty}
+
+  % Switch to PART background and apply it to THIS page
+  \BgSetupPart
+  \BgThispage
+  
+  % Step the part counter and set the LaTeX label
+  \refstepcounter{part}\label{#2}
+
+  % Create a clean top-level PDF bookmark (safe dest name; avoids nesting)
+  %\phantomsection
+  %\pdfbookmark[0]{PART \thepart\ \ #1}{bm-part-\thepart}
+  % Keep the TOC entry consistent with \part
+  \addcontentsline{toc}{part}{#1}
+
+ % Centered white text (ON THE SAME PAGE)
+\begin{fullwidth}
+  \vspace*{0.30\paperheight}
+  \begin{center}
+    % ---- PART label line (match Chapter label size/weight) ----
+    {\color{WHITE}\huge\bfseries PART \thepart\par}
+    \vspace{1.2em}
+    % ---- PART title line (match Chapter title size) ----
+    {\color{WHITE}\fontsize{30}{34}\selectfont #1\par}
+  \end{center}
+\end{fullwidth}
+
+  \cleardoublepage
+
+  % Restore CHAPTER background so the next \BgThispage shows the chapter banner again
+  \BgSetupChapter
+}
+
+%%%%%%%%%%%%%%%
+
+
+\makeatletter
+\renewcommand{\@seccntformat}[1]{%
+  \texorpdfstring{\textcolor{DPRED}{\csname the#1\endcsname}}{\csname the#1\endcsname}\quad
+}
+\makeatother
+
 
 \usepackage{babel}
 \usepackage{listings}
 \renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
 \makeindex 
+%%%%%%%%%%%%% chapter title font
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{%
+  \vspace*{2.5\baselineskip}%
+  {\parindent \z@ \raggedright \normalfont
+   \ifnum \c@secnumdepth >\m@ne
+     {\huge\bfseries Chapter \thechapter\par}\nobreak
+     \vskip 1.0\baselineskip
+   \fi
+   % widen the title line to include the margin area
+   \begin{minipage}{\dimexpr\textwidth+\marginparwidth+\marginparsep\relax}
+     {\fontsize{27}{30}\selectfont #1\par}%
+   \end{minipage}\nobreak
+   \vskip 2.0\baselineskip
+  }%
+}
+\makeatother
+%%%%%%%%%%%%%%%%%%%
+
+\usepackage{setspace}
+\setstretch{1.05}
+
+%%% listings formatting
+
+\definecolor{CODEBG}{gray}{0.94}
+\lstset{
+  backgroundcolor=\color{CODEBG},
+  basicstyle=\small\ttfamily,
+  lineskip=1pt,
+  frame=none,
+  aboveskip=0.8\baselineskip,
+  belowskip=0.8\baselineskip,
+  framesep=8pt,
+  framexleftmargin=6pt,
+  framexrightmargin=6pt
+}
+
+%%% figure subtle spacing
+
+\setlength{\abovecaptionskip}{8pt}
+
+\pdfstringdefDisableCommands{%
+  \def\textcolor#1#2{#2}%
+  \def\color#1{}%
+}
+
+%%%% subtle initial letter larger for paragraphs of first pages %%
+
+\usepackage{lettrine}
+
+% Minimal, professional drop cap style
+\setlength{\DefaultNindent}{0em}
+\setlength{\DefaultFindent}{0em}
+\renewcommand{\LettrineFontHook}{\normalfont\bfseries}
+
+
+%%%%%%%%%%%%%%% BEGIN DOCUMENT %%%%%%
+
 \begin{document}
+\BgSetupChapter
 \newgeometry{right=10cm} 
 \color{white}
 \maketitle
@@ -157,13 +293,15 @@ Part II, Modifying PDF Documents, covers modifying PDFs, merging documents, edit
 Part II, OtherTopics, covers additional topics, including custom components, report generation, and using DynamicPDF Designer for advanced document layout and automation.
 
 This book provides an in-depth resource for developers and professionals seeking to master PDF generation and manipulation using the DynamicPDF Core Suite for .NET.
-\tableofcontents{}
+
+\tableofcontents
 
 \color{white}
 \chapter{Introduction}\label{chap:Introducing-DynamicPDF-Core}
 \color{black}
 \BgThispage
-Welcome to the DynamicPDF Core Suite, powerful software for creating
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{W}{elcome} to the DynamicPDF Core Suite, powerful software for creating
 and editing PDF documents using .NET. This software allows you to
 easily create, merge, and modify PDF documents. It also includes
 the additional software DynamicPDF Designer, a robust WYSIWYG editor
@@ -172,6 +310,9 @@ Core Suite can significantly reduce the time and effort required
 to work with PDF documents.
 
 This book focuses on creating and modifying PDF documents and splits its contents into three parts: creating PDF documents, modifying PDF documents, and then using Designer and the report Layout Engine to create dynamic reports. 
+\begin{marginfigure}
+\includegraphics[scale=0.5]{figures/ch1/large-logo}
+\end{marginfigure}
 \subsection{So, what's in store for this book?}
 In part one, we'll start by discussing creating and adding pages to a document. Then, we'll explore using templates to create
 PDF documents with repeatable content, such as headers and footers.
@@ -185,7 +326,9 @@ for long-term archiving.
 
 In part two, we examine how to modify PDF documents. We will merge preexisting PDF documents into a new PDF document, add new pages to a PDF, and extract pages from existing PDF documents. You also learn how to complete and modify forms, including adding new form elements. Finally, this section will explore reading and modifying outlines and bookmarks and extracting text, images, and other page elements from a PDF document.
 
-Part three completes our examination of the DynamicPDF Core Suite by examining creating custom components and dynamic reports using DynamicPDF's Layout Engine and its accompanying WSYWIG, DynamicPDF Designer. In this part, you learn how to create reports graphically using Designer and then programmatically use the Core Suite's Layout Engine to create dynamic reports. 
+Part three completes our examination of the DynamicPDF Core Suite by examining creating custom components and dynamic reports using DynamicPDF's Layout Engine and its accompanying WSYWIG, DynamicPDF Designer. In this part, you learn how to create reports graphically using Designer and then programmatically use the Core Suite's Layout Engine to create dynamic reports. \marginnote{A list of features and differences between Core Suite versions is
+available at: https://www.dynamicpdf.com/docs/
+dotnet/dynamic-pdf-core-suite-features}
 
 By the end of this book, you'll be well-versed
 in the art of creating and modifying PDF documents and creating PDF reports.  But let's start by creating a new PDF and modifying an existing PDF using
@@ -202,8 +345,7 @@ merged these three products into two products: Essentials and Professional.
 When purchasing Core Suite, you are provided the opportunity to select
 between Essentials or the Full Product. Refer to ceTe’s DynamicpDF
 Core Suite for .NET Features page in their documentation for a complete
-list of differences.\sidenote{A list of features and differences between Core Suite versions is
-available at: (https://www.dynamicpdf.com/docs/dotnet/dynamic-pdf-core-suite-features} But in general, essentials is for creating very simple PDF documents
+list of differences. But in general, essentials is for creating very simple PDF documents
 and simple merging, while Professional adds merging, form manipulation,
 barcoding, image manipulation, charting, and many other features.
 In this book, we assume the Full Product.\sidenote{If you do not have a license, you can use the freely available evaluation
@@ -300,22 +442,20 @@ usage.
 Since its release in 1993, the PDF specification has evolved significantly.
 It was initially proprietary and controlled by Adobe, but it became
 an ISO open standard in 2008 (ISO 32000-1:2008). There are two primary
-ISO standards for PDF documents, ISO 32000-1:2008 and ISO 32000-2:2020.\cite{iso_pdf1,iso_pdf2}
+ISO standards for PDF documents, ISO 32000-1:2008 and ISO 32000-2:2020.
 
 A PDF document combines text, vector graphics, and bitmap graphics
 to create an electronic document. A PDF file combines the assets stored
 in the PDF document using built-in storage and a subset of Postscript
 rendering instructions for combining and displaying its assets.
 
-A PDF document can be linearized (optimized) or non-linearized.\sidenote{Linearize a PDF if creating a large document that requires streaming
-on the web.} PDF documents can also conform to standards such as PDF/UA or PDF/A,
+A PDF document can be linearized (optimized) or non-linearized. PDF documents can also conform to standards such as PDF/UA or PDF/A,
 which are crucial for ensuring accessible documents or for facilitating
 long-term storage. The PDF/Universal Accessibility (PDF/UA) ISO standard
 provides standards for ensuring accessibility for people with disabilities
 requiring screen readers, magnifiers, and other similar technologies.
 The PDF/Archive (PDF/A) ISO standard provides standards for ensuring
-PDF documents are suitable for long-term archiving.\sidenote{We discuss PDF/UA and PDF/A more in Chapters \ref{chap:Accessibility}
-and \ref{chap:Archiving-and-PDF/A}.}
+PDF documents are suitable for long-term archiving.
 
 Refer to Adobe's ample online documentation to learn more about the PDF standard. Alternatively, you can use Wikipedia as a starting point for further exploration. Now, let's get to coding "Hello World."
 
@@ -344,7 +484,6 @@ the new PDF document (Figure \ref{fig:A-simple-PDF}).
 \end{enumerate}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a PDF from scratch.},label={lis:Creating-a-PDF},basicstyle={\small},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -386,7 +525,7 @@ chapters. However, as Listing \ref{lis:Creating-a-PDF} illustrates,
 when using Core Suite, creating a PDF always begins with a new \texttt{Document}\index{Document}
 instance 
 \section{Modifying Your First PDF}
-Now that you have seen how to create your first PDF document, let's switch to modifying three pre-existing PDF documents by merging them together. Let's also add a new page to the merged document.
+Now that you have seen how to create your first PDF document, let's switch to modifying three pre-existing PDF documents by merging them together. Let's also add a new page to the merged document. \marginnote{Modifying a PDF almost always requires performing the steps in Figure  \ref{mar:mod-common-processing-steps-1}}
 \begin{figure}
 \includegraphics[scale=0.75]{figures/ch1/modify-diagram}\caption{Common processing steps when modifying a PDF document.}\label{mar:mod-common-processing-steps-1}
 \end{figure}
@@ -408,7 +547,6 @@ For example, in Listing \ref{lis:modifying-a-PDF} you merge three documents toge
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Modifying a PDF.},label={lis:modifying-a-PDF},basicstyle={\small},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Merger;
 using ceTe.DynamicPDF.PageElements;
@@ -451,16 +589,17 @@ the remainder of this book. But throughout Part \ref{part:Create-PDF-Documents},
 in Figure \ref{mar:Common-processing-steps-1} and remember these
 common processing steps as you work through the book and its examples. Then, when we get to Part \ref{part:modifying-pdf-doc}, we can examine modifying PDF documents, as the steps are more involved. But fundamentally the steps are similar to those in Figure \ref{mar:mod-common-processing-steps-1}. We will discuss modifing PDF documents more later, for now, let's get started with creating new PDF documents.
 
-\part{Creating PDF Documents}\label{part:Create-PDF-Documents}
+\DPpart{Creating PDF Documents}{part:Create-PDF-Documents}
 \color{white}
 \chapter{Documents}\label{chap:Creating-PDF-Documents}
 \color{black}
 \BgThispage
-In this chapter, you learn about creating documents using the \texttt{Document} class. We build upon what you learned in Chapter \ref{chap:Introducing-DynamicPDF-Core}
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter, you learn about creating documents using the \texttt{Document} class. We build upon what you learned in Chapter \ref{chap:Introducing-DynamicPDF-Core}
 by laying out pages of a document using coordinates, allowing you precise control
 of your PDF document's appearance. You also learn about setting a PDF
 document's properties and how to alter the initial appearance of your
-document in a PDF reader such as Adobe Acrobat Reader. 
+document in a PDF reader such as Adobe Acrobat Reader.\marginnote{Understanding page dimensions and how to place elements on a page is critical for creating professional appearing PDF documents. }
 
 We then devote the remainder of the chapter to page dimensions and page layout. Although we
 spend considerable time on page dimensions, coordinates, and precise
@@ -516,15 +655,14 @@ you can create a PDF document.
 After building a document, you call one of the \texttt{Document}\index{Document} instance's
 provided \texttt{Draw}\index{Draw} methods. The \texttt{Document}\index{Document} class has three
 overloads for the \texttt{Draw}\index{Draw} method, allowing you to write a PDF
-document to a file, to a stream, or a byte-array.
+document to a file, to a stream, or a byte-array.\marginnote{In this book we limit our examples to using the \texttt{Draw} method to output to a file.}
 \begin{itemize}
 \item \texttt{Draw()} - Writes document to a byte array.
 \item \texttt{Draw(Stream)} - Writes document to a Stream.
 \item \texttt{Draw(String)} - Writes document to a file using provided path.
 \end{itemize}
 Drawing a PDF document to a stream or array allows incorporating the
-PDF into a larger application such as a web page.\sidenote{In this book we limit our examples to using the \texttt{Draw} method
-to output to a file.}
+PDF into a larger application such as a web page.
 
 \section{Adding Pages}
 
@@ -538,7 +676,6 @@ very interesting PDF document, as it consists of two blank pages.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a simple PDF Document.},label={lis:ch2Creating-a-simple},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 
 namespace ChapterExamples.Chapters.ChapterTwo
@@ -561,18 +698,18 @@ namespace ChapterExamples.Chapters.ChapterTwo
 
 
 \subsection{Page Class}
-
-You add pages to a document by creating and adding \texttt{Page}\index{Page} instances.\marginnote{All measurements in Core Suite use points.}
+\marginnote{All measurements in Core Suite use points.}
+You add pages to a document by creating and adding \texttt{Page}\index{Page} instances.
 A \texttt{Page}\index{Page} represents a page in a PDF document. A \texttt{Page}\index{Page}
 has properties abstracting its dimensions, size, and orientation with
 the \texttt{PageDimensions}\index{PageDimensions}, \texttt{PageSize}\index{PageSize}, and \texttt{PageOrientation}\index{PageOrientation}
-classes. The \texttt{Page}\index{Page} class has eight different overloads for its constructor:
+classes. \marginnote{A page's defaults values are: 50 pt margins, 1008 pt width, and 612 pt
+height.}The \texttt{Page}\index{Page} class has eight different overloads for its constructor:
 \texttt{Page()}, \texttt{Page(PageDimensions)}, \texttt{Page(PageSize)},
 \texttt{Page(PageSize, PageOrientation)}, \texttt{Page(PageSize, PageOrientation,
 Single)}, \texttt{Page(PageSize, Single)}, \texttt{Page(Single, Single)},
 and \texttt{Page(Single, Single, Single)}. These constructor parameters
-initialize a page's size, orientation, and layout.\marginnote{A page's defaults values are: 50 pt margins, 1008 pt width, and 612 pt
-height.}
+initialize a page's size, orientation, and layout.
 
 \subsection{Page Orientation, Size, and Margins}
 
@@ -598,7 +735,6 @@ PDF document to a file (Figure \ref{mar:ch2-Listing-produces-a}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a PDF with different page sizes.},label={lis:ch2-multipage-Creating-a-PDF-1},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 
 namespace ChapterExamples.Chapters.ChapterTwo
@@ -647,8 +783,14 @@ explicitly. However, every page has a dimensions object populated
 with default or assigned values. You access these values directly
 through the page's \texttt{Dimensions}\index{Dimensions} property if you wish to view
 or modify a page's size, orientation, or margins. For example, Listing
-\ref{lis:ch2-multipage-Creating-a-PDF-1} prints the page's dimensions to the console as: \texttt{Width: 1008 Height: 612 LeftMargin: 100
-RightMargin: 100 TopMargin: 50 BottomMargin: 50}.
+\ref{lis:ch2-multipage-Creating-a-PDF-1} prints the page's dimensions to the console as: 
+{\ttfamily\bgroup\inputencoding{latin9}
+\begin{lstlisting}[basicstyle={\small\ttfamily},breaklines=true]
+Width: 1008 Height: 612 LeftMargin: 100
+RightMargin: 100 TopMargin: 50 BottomMargin: 50
+\end{lstlisting}
+\leavevmode\egroup
+}
 
 \section{Coordinate System}\label{sec:Coordinate-System}
 
@@ -748,8 +890,7 @@ PDF document.
 \end{figure}
 
 \bgroup\inputencoding{latin9}
-\begin{lstlisting}[caption={Ignoring an image's margins and relative positioning.},label={lis:Ignoring-an-image's},basicstyle={\small\ttfamily}]
-
+\begin{lstlisting}[caption={Ignoring an image's margins and relative positioning.},label={lis:Ignoring-an-image's},basicstyle={\small\ttfamily},breaklines=true]
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -792,32 +933,28 @@ namespace ChapterExamples.Chapters.ChapterTwo
 }
 \end{lstlisting}
 \leavevmode\egroup
-
+\begin{marginfigure}
+\includegraphics[scale=0.27]{figures/ch2/stepone-center}\caption{Step one of centering the image in Listing \ref{lis:Centering-an-image}.}\label{mar:Step-one-of}
+\end{marginfigure}
 \subsection{Example - Centering an Image}
 
 Let's consider another example illustrating using measurements to lay out a
 page (Listing \ref{lis:Centering-an-image}). 
-\begin{marginfigure}
-\includegraphics[scale=0.27]{figures/ch2/stepone-center}\caption{Step one of centering the image in Listing \ref{lis:Centering-an-image}.}\label{mar:Step-one-of}
-\end{marginfigure}
 
-\begin{marginfigure}
-\raggedright
-\includegraphics[scale=0.21]{figures/ch2/layoutgrid1}\caption{The image from Listing \ref{lis:Centering-an-image} centered on a
-PDF document page.}\label{mar:center-The-image-from}
-\end{marginfigure}
 Centering an image on a page is straightforward. Simply find the center
 of the page and then set the image to vertical and horizontal alignment
 at that point. Remember, an image's \texttt{x} and \texttt{y} coordinates are the top
-left corner of the image. For example, the image used in Listing \ref{lis:Centering-an-image}
+left corner of the image. \begin{marginfigure}
+\includegraphics[scale=0.21]{figures/ch2/layoutgrid1}\caption{The image from Listing \ref{lis:Centering-an-image} centered on a
+PDF document page.}\label{mar:center-The-image-from}
+\end{marginfigure} For example, the image used in Listing \ref{lis:Centering-an-image}
 first places the image with its top left corner at the center of the
 page (Figure \ref{mar:Step-one-of}). It then centers the image by
 setting the \texttt{Align}\index{Align} and \texttt{VAlign}\index{VAlign} property values to
-\texttt{Center}\index{Center}. 
+\texttt{Center}\index{Center} (Figure \ref{mar:center-The-image-from}). 
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Centering an image on a page.},label={lis:Centering-an-image},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -844,9 +981,11 @@ namespace ChapterExamples.Chapters.ChapterTwo
 \leavevmode\egroup
 The resulting image from Listing \ref{lis:Centering-an-image} is shown in Figure \ref{mar:centering-image}.
 \begin{figure}
-\includegraphics[scale=0.35]{figures/ch2/fig11}\caption{Centering an image.}\label{mar:centering-image}
+\includegraphics[scale=0.30]{figures/ch2/fig11}\caption{Centering an image.}\label{mar:centering-image}
 \end{figure}
-
+\begin{marginfigure}
+\includegraphics[scale=0.13]{figures/ch2/image-coords-one}\caption{Image centered relative to margin.}\label{mar:Image-marg-relative}
+\end{marginfigure}
 As an aside, let's consider two more layout examples using our
 image. Note the different locations after changing the code in Listing
 \ref{lis:Centering-an-image} to the code in Listing \ref{lis:Modifying-Listing-}.
@@ -855,16 +994,12 @@ corner relative to the margin (Figure \ref{mar:Image-marg-relative})
 while in the second code fragment the image is positioned relative
 to the page (Figure \ref{mar:pg-cent-Image-centered-relative}). 
 \begin{marginfigure}
-\includegraphics[scale=0.13]{figures/ch2/image-coords-one}\caption{Image centered relative to margin.}\label{mar:Image-marg-relative}
-\end{marginfigure}
-\begin{marginfigure}
 \includegraphics[scale=0.13]{figures/ch2/image-coords-two}\caption{Image centered relative to the page.}\label{mar:pg-cent-Image-centered-relative}
 \end{marginfigure}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Modifying Listing \ref{lis:Centering-an-image} to different image
 positions.},label={lis:Modifying-Listing-},basicstyle={\small\ttfamily},breaklines=true]
-
 Document myDoc = new();
 Page myPg = new();
 myDoc.Pages.Add(myPg);
@@ -891,7 +1026,7 @@ of the page. Because a page element's \texttt{x} and \texttt{y} values are measu
 upper left corner of the element, we had to use these properties to
 complete centering the image (Figure \ref{mar:center-The-image-from}). We can change this behavior using the \texttt{VAlign}\index{VAlign} property.
 \begin{figure}
-\includegraphics[scale=0.40]{figures/ch2/valign}\caption{Applying VAlign to a Label.}\label{mar:Applying-VAlign-to}
+\includegraphics[scale=0.43]{figures/ch2/valign}\caption{Applying VAlign to a Label.}\label{mar:Applying-VAlign-to}
 \end{figure}
 The \texttt{VAlign}\index{VAlign} property changes the y position to an element's center.
 So, for example, if a \texttt{Label} has a \texttt{y} value of 100 and it's
@@ -916,7 +1051,6 @@ your page's layout.}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using the LayoutGrid class for development.},label={lis:ly-grid-Example-using-the},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -980,7 +1114,6 @@ For example, consider the simple HTML in Listing \ref{lis:HTMl-document-with}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={HTMl document with simple CSS and image link.},label={lis:HTMl-document-with},basicstyle={\small\ttfamily},breaklines=true]
-
 <html>
 <head>
     <style>
@@ -1021,7 +1154,6 @@ project that reads the HTML into a string from a file.} You then add a header an
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using the HtmlLayout class to create a PDF document.},label={lis:Using-the-HtmlLayout},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ChapterExamples.Utility;
 
@@ -1064,7 +1196,6 @@ Properties...} in the document's context menu.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Document level properties.},label={lis:ch2-doc-prop-Creating-a-document},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -1116,7 +1247,6 @@ through the \texttt{Document}\index{Document} class's \texttt{ViewerPreferences}
 In Listing \ref{lis:Setting-viewer-preferences} you set the PDF document to center the PDF document in the PDF viewer's window, hide the menubar, display the document title, and to fit in the viewer's window.
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Setting viewer preferences.},label={lis:Setting-viewer-preferences},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -1193,7 +1323,8 @@ pages and ensure those pages have a logical organization.
 \chapter{Templates and Sections}\label{chap:Templates-and-Document}
 \color{black}
 \BgThispage
-In the previous chapter, you learned how to add pages to a document and how to precisely lay out a document's
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{I}{n} the previous chapter, you learned how to add pages to a document and how to precisely lay out a document's
 pages using a PDF's coordinates. In this chapter, we build upon that
 knowledge by learning how to create pages with consistent formatting
 and sectioning. DynamicPDF Core Suite allows separating documents
@@ -1363,7 +1494,7 @@ namespace ChapterExamples.Chapters.ChapterThree
         {
             Document doc = new();
             DocumentExampleGenerator.Generate(doc);
-		   Pages pg = doc.Pages[0];
+       Pages pg = doc.Pages[0];
             Template tmp = new();
 
             float hgt = pg.Dimensions.Height/3;
@@ -1416,7 +1547,6 @@ author's name and page number on the left (Figure \ref{fig:Applying-an-even/odd}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Applying an EvenOddTemplate to a PDF document.},label={lis:Applying-diffent-template},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -1477,7 +1607,6 @@ PDF has a header and footer on each page (Figure \ref{fig:Applying-a-header}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using the HeaderFooterTemplate class.},label={lis:Applying-headers-and},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -1541,7 +1670,6 @@ toolbar then displays the page numbering and text for that section
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Applying sectioning to a PDF document.},label={lis:Applying-sectioning-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -1588,19 +1716,18 @@ PDF document for that page.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Omitting template from a single page of a document.},label={lis:Omitting-template-from},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void Create(string outputPath)
 {
-    Document doc = new Document();
-   Template tmp = new Template();
-    doc.Template = tmp;
-    tmp.Elements.Add(new PageNumberingLabel("%%SP%% of %%ST%%", 0, 680, 512, 12, Font.Helvetica, 12, TextAlign.Center));
-    doc.Pages.Add(new Page());
-    doc.Pages.Add(new Page());
-    doc.Pages[1].ApplyDocumentTemplate = false;
-    doc.Pages.Add(new Page());
-    doc.Draw(outputPath);
- }
+  Document doc = new Document();
+  Template tmp = new Template();
+  doc.Template = tmp;
+  tmp.Elements.Add(new PageNumberingLabel("%%SP%% of %%ST%%", 0, 680, 512, 12, Font.Helvetica, 12, TextAlign.Center));
+  doc.Pages.Add(new Page());
+  doc.Pages.Add(new Page());
+  doc.Pages[1].ApplyDocumentTemplate = false;
+  doc.Pages.Add(new Page());
+  doc.Draw(outputPath);
+}
 \end{lstlisting}
 \leavevmode\egroup
 
@@ -1609,7 +1736,6 @@ You can also limit page output for an individual document section, as Listing
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Omitting template from a section page.},label={lis:Omitting-template-from-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void Create2(string outputPath)
 {
     Document doc = new Document();
@@ -1653,7 +1779,6 @@ to the main document. The result is the PDF document in Figure \ref{fig:final-Ex
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A PDF document with multiple sections.},label={lis:A-PDF-document},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -1733,8 +1858,8 @@ PDF document with content and can then focus on tables and charts.
 \chapter{Text}\label{chap:Page-Elements--text}
 \color{black}
 \BgThispage
-
-In this chapter, you'll explore the text-related page elements of the DynamicPDF Core Suite and learn how to add them to a \texttt{Page} instance or a \texttt{Template}. All page elements are found in the \texttt{ceTe.DynamicPDF.PageElements}\index{ceTe.DynamicPDF.PageElements} namespace, and this chapter focuses on those classes within the namespace.
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter, you'll explore the text-related page elements of the DynamicPDF Core Suite and learn how to add them to a \texttt{Page} instance or a \texttt{Template}. All page elements are found in the \texttt{ceTe.DynamicPDF.PageElements}\index{ceTe.DynamicPDF.PageElements} namespace, and this chapter focuses on those classes within the namespace.
 
 We begin with the \texttt{Label} class, which allows you to add labels to documents. Next, you'll learn how to use the \texttt{TextArea} and \texttt{FormattedTextArea} classes to insert larger text blocks into a page. You'll also discover how to handle cases where text exceeds an element's dimensions, using overflow methods to manage excess content effectively.
 
@@ -1869,7 +1994,6 @@ and generate the PDF (Figure\ref{fig:label-Result-from-adding}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a label to a PDF document's page.},label={lis:Adding-a-label},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -1919,7 +2043,6 @@ the resulting PDF.
 \end{marginfigure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a TextArea to a PDF document.},label={lis:Adding-a-TextArea},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -1990,7 +2113,6 @@ height would be beyond the output area.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Handling text overflow.},label={lis:Handling-text-overflow},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2071,7 +2193,6 @@ which we cover next.
 \end{marginfigure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a FormattedTextArea to a PDF document.},label={lis:Adding-a-FormattedTextArea},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.utilities;
@@ -2121,7 +2242,6 @@ result of Listing \ref{lis:Adding-an-HtmlArea} is a two-page PDF document (Figur
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding an HtmlArea.},label={lis:Adding-an-HtmlArea},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ChapterExamples.Utility;
 using ceTe.DynamicPDF.PageElements.Html;
@@ -2200,7 +2320,6 @@ instance added to the list's \texttt{Items} collection.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding an unordered list to a PDF document.},label={lis:Adding-an-unordered},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -2253,7 +2372,6 @@ is the resulting list.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={An ordered list.},label={lis:Adding-an-ordered},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -2317,7 +2435,6 @@ output (Figure \ref{mar:PDF-document-containing}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A combined ordered and unordered list.},label={lis:List-combining-ordered},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2384,7 +2501,6 @@ method in a do/while loop (Figure \ref{fig:list-overflow-Example-of-a}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using a list's GetOverFlowList method.},label={lis:overflow-Using-a-list's},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2448,7 +2564,6 @@ a help note to a document. The results are displayed in Figure \ref{fig:Adding-n
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding notes to a PDF document.},label={lis:Adding-notes-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2549,7 +2664,6 @@ page numbering styles and specifies the current page of total pages
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Page numbering styles.},label={lis:Adding-different-page},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2599,7 +2713,6 @@ is the resulting PDF document.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a text watermark to a PDF document.},label={lis:watermark-Adding-a-text},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2614,7 +2727,6 @@ namespace ChapterExamples.Chapters.ChapterFour
             doc.Pages.Add(new Page(PageSize.Letter));
 
             string txt1 = TextGenerator.GenerateText();
-
             float pgWdth = doc.Pages[0].Dimensions.Width - doc.Pages[0].Dimensions.LeftMargin * 2;
 
             TextArea txtOne = new(txt1, 0, 0, pgWdth, 20, Font.TimesBold, 14);
@@ -2625,7 +2737,6 @@ namespace ChapterExamples.Chapters.ChapterFour
 
             doc.Pages[0].Elements.Add(txtOne);
             doc.Pages[0].Elements.Add(textWatermark);
-
             doc.Draw(outputPath);
         }
     }
@@ -2652,7 +2763,6 @@ First, you create a new \texttt{AutoLayout} instance, specifying that the page s
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using AutoLayout to create a PDF document.},label={lis:autolayout},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2713,8 +2823,8 @@ With textual elements covered, we now turn our attention to graphical elements. 
 \chapter{Vector Graphics}\label{chap:Page-Elements--graphics}
 \color{black}
 \BgThispage
-
-In the previous chapter, you learned how to add textual elements to a PDF document. However, a document with only text is far less engaging than one that includes graphics and images. In this chapter, we enhance our PDFs by incorporating graphical elements. 
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} the previous chapter, you learned how to add textual elements to a PDF document. However, a document with only text is far less engaging than one that includes graphics and images. In this chapter, we enhance our PDFs by incorporating graphical elements. 
 
 Beyond text, you can also
 add vector line art like lines, rectangles, circles, and paths to a
@@ -2759,7 +2869,6 @@ of a line to modify its appearance.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using the Line class.},label={lis:Using-the-Line},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -2835,7 +2944,6 @@ and the height as the dimensions of the created rectangle. Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding two rectangles to a PDF document.},label={lis:Adding-two-rectangles},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -2903,7 +3011,6 @@ to a page of different radius, fill color, and border appearance (Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding circles to a PDF document.},label={lis:Adding-circles-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -3023,7 +3130,6 @@ The PDF document consists of three shapes (Figure \ref{fig:Steps-to-adding}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding path to a PDF document.},label={lis:Adding-path-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -3077,7 +3183,6 @@ You can use the \texttt{AutoLayout}\index{AutoLayout} class to add shapes automa
 \end{marginfigure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using AutoLayout to create a PDF document.},label={lis:autolayout-shapes},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -3127,8 +3232,8 @@ In the next chapter, we’ll continue exploring graphical elements by introducin
 \chapter{Images}\label{chap:Images}
 \color{black}
 \BgThispage
-
-In the last chapter, you learned how to add vector-based primitive
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} the last chapter, you learned how to add vector-based primitive
 shapes to a PDF document. Although using vector-based classes creates
 visually appealing documents, you often need to add images. In this
 chapter, we examine adding raster graphics to a PDF document. 
@@ -3254,7 +3359,6 @@ resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding images to a PDF document.},label={lis:Adding-images-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Imaging;
 using ceTe.DynamicPDF.PageElements;
@@ -3323,7 +3427,6 @@ instance and add it to a document page (Figure \ref{mar:Adding-a-jpeg}).\sidenot
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding an image using image's data.},label={lis:imagedata-jpg-Adding-an-Image},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Imaging;
 using ceTe.DynamicPDF.PageElements;
@@ -3421,12 +3524,11 @@ memory leaks.}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a document from a TIFF.},label={lis:tif-Creating-a-document},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void CreateNewDoc(string resourcePath, string outputPath){
-	TiffFile myTiff = new TiffFile(resourcePath + "model.tif");
+  TiffFile myTiff = new TiffFile(resourcePath + "model.tif");
     Document doc = myTiff.GetDocument();
     doc.Draw(outputPath + "tiff-doc-out.pdf");
-	myTiff.Close();
+  myTiff.Close();
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -3449,16 +3551,15 @@ document (Figure \ref{mar:tiff-Adding-an-image}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a TIFF's image to a page.},label={lis:Adding-a-tiff's},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddTiffToDoc(string resourcePath, string outPath) {
-	Document doc = new();
-	doc.Pages.Add(new Page(PageSize.Letter));
+  Document doc = new();
+  doc.Pages.Add(new Page(PageSize.Letter));
      
-	TiffFile myTiff = new TiffFile(resourcePath + "model.tif");
-	doc.Pages[0].Elements.Add(new Image(myTiff.Images[0], 0, 0, .5f));
-	doc.Pages.Add(new Page(PageSize.Letter));
-	doc.Draw(outPath + "tiff-added-to-page-out.pdf");
-	myTiff.Close();
+  TiffFile myTiff = new TiffFile(resourcePath + "model.tif");
+  doc.Pages[0].Elements.Add(new Image(myTiff.Images[0], 0, 0, .5f));
+  doc.Pages.Add(new Page(PageSize.Letter));
+  doc.Draw(outPath + "tiff-added-to-page-out.pdf");
+  myTiff.Close();
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -3480,12 +3581,11 @@ document has multiple pages (Figure \ref{mar:multipage-tiffCreating-a-new}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a document from multi-page TIFF.},label={lis:tiff-multi-Creating-a-new},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void CreateNewDocMultipage(string resourcePath, string outputPath){
-	TiffFile myTiff = new TiffFile(resourcePath + "multipage.tiff");
-	Document doc = myTiff.GetDocument();
-	doc.Draw(outputPath + "tiff-doc-multi-out.pdf");
-	myTiff.Close();
+  TiffFile myTiff = new TiffFile(resourcePath + "multipage.tiff");
+  Document doc = myTiff.GetDocument();
+  doc.Draw(outputPath + "tiff-doc-multi-out.pdf");
+  myTiff.Close();
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -3502,18 +3602,17 @@ illustrates (Figure \ref{mar:mul-tif-Adding-images-from}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding multi-page tiff images to pages.},label={lis:tif-Adding-images-from},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void MultiPageAddTiffToDoc(string resourcePath, string outputPath)
 {
-	Document doc = new();
-	doc.Pages.Add(new Page(PageSize.Letter));
-	doc.Pages.Add(new Page(PageSize.Letter));
+  Document doc = new();
+  doc.Pages.Add(new Page(PageSize.Letter));
+  doc.Pages.Add(new Page(PageSize.Letter));
 
-	TiffFile myTiff = new TiffFile(resourcePath + "multipage.tiff");
-	doc.Pages[0].Elements.Add(new Image(myTiff.Images[0], 0, 0, .25f));
-	doc.Pages[1].Elements.Add(new Image(myTiff.Images[1], 0, 0, .25f));
-	doc.Draw(outputPath + "tiff-multipage-added-to-page-out.pdf");
-	myTiff.Close();
+  TiffFile myTiff = new TiffFile(resourcePath + "multipage.tiff");
+  doc.Pages[0].Elements.Add(new Image(myTiff.Images[0], 0, 0, .25f));
+  doc.Pages[1].Elements.Add(new Image(myTiff.Images[1], 0, 0, .25f));
+  doc.Draw(outputPath + "tiff-multipage-added-to-page-out.pdf");
+  myTiff.Close();
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -3533,7 +3632,6 @@ it to the page as a background image.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a background image.},label={lis:Adding-a-background},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -3574,7 +3672,6 @@ it a watermark. You must add the watermark to each page of your document or use 
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a watermark.},label={lis:Adding-a-watermark},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -3671,7 +3768,6 @@ this book's scope.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a 3D image.},label={lis:image3Adding-a-3D},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Imaging;
 using ceTe.DynamicPDF.PageElements;
@@ -3787,8 +3883,8 @@ a unit rather than individually.
 \chapter{Grouping}\label{chap:Page-Elements--grouping}
 \color{black}
 \BgThispage
-
-This chapter teaches you how to treat page elements as a single unit.
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{T}{his} chapter teaches you how to treat page elements as a single unit.
 In the previous chapters, when adding a page element to a page, you
 were required to add it to the page's elements collection. When using
 one of Core Suite's grouping classes, you can treat page elements
@@ -4171,8 +4267,8 @@ individually.
 \chapter{Fonts and Colors}\label{chap:fonts-colors}
 \color{black}
 \BgThispage
-
-In this chapter we discuss fonts and colors. Although we have addressed
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter we discuss fonts and colors. Although we have addressed
 both topics throughout this book, here we explicitly discuss both
 and how to use fonts and colors in Core Suite to create more engaging PDF documents.
 We start this chapter by discussing fonts. Although Adobe has fourteen
@@ -4395,7 +4491,6 @@ illustrates the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={PDF document using OpenType Font.},label={lis:opentype-PDF-document-using-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void OpenTypeExample(string resourcePath, string outputPath)
 {
     Document doc = new();
@@ -4475,7 +4570,6 @@ as \texttt{true}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Embedding a font.},label={lis:Embedding-a-font.},basicstyle={\small\ttfamily},breaklines=true]
-
 string text = "PDF/A (Archiving) requires you embedd fonts.";
 OpenTypeFont openTypeFont = new OpenTypeFont("times.ttf");
 opentypeFont.Embed = true;
@@ -4515,7 +4609,6 @@ illustrates the results.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Encoding a PDF document.},label={lis:Encoding-a-PDF},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void EncodingExample(string resourcePath, string outputPath)
  {
      Document doc = new();
@@ -4585,7 +4678,6 @@ resulting PDF.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Kerning and tracking applied to a PDF.},label={lis:Kerning-and-tracking},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void Kerning(string outputPath)
 {
     Document doc = new Document();
@@ -4664,7 +4756,6 @@ and a label.You then add two circles using the \texttt{Grayscale} class. Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Colors in a PDF document.},label={lis:Colors-in-a},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -4751,7 +4842,6 @@ and auto-gradients applied to the shapes.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Gradients in a PDF document.},label={lis:Gradients-in-a},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -4827,7 +4917,6 @@ PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using spot color in a PDF document.},label={lis:Using-spot-color},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void CreateSpotColor(string outputPath)
 {
     Document doc = new();
@@ -4861,8 +4950,8 @@ adds two colors together automatically, the \texttt{Gradient} class gives you gr
 \chapter{Tables}\label{chap:Tables}
 \color{black}
 \BgThispage
-
-Now that we have explored fonts and colors, let's return to page elements and learn how to add tables to a PDF document. In this chapter, you will learn how to create and work with tables, which present data in a structured format using rows and columns.
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{N}{ow} that we have explored fonts and colors, let's return to page elements and learn how to add tables to a PDF document. In this chapter, you will learn how to create and work with tables, which present data in a structured format using rows and columns.
 
 A table is an organized arrangement of rows and columns, where each row consists of cells that can contain text or other page elements. DynamicPDF Core Suite for .NET provides the
 \texttt{Table2}\index{Table2} class, \texttt{Row2}\index{Row2} class, \texttt{Column2}\index{Column2} class,
@@ -4909,7 +4998,6 @@ table.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A simple table example.},label={lis:A-simple-table},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -4960,7 +5048,6 @@ rows (Figure \ref{fig:fig-Spanning-rows-and}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Spanning rows and columns.},label={lis:Spanning-rows-and},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5041,7 +5128,6 @@ formatting a table (Figure \ref{mar:Adding-formatting-to}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding formatting to a table.},label={lis:Adding-formatting-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5100,7 +5186,6 @@ manipulate table and cell borders.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Formatting a table's borders.},label={lis:Formatting-a-table's},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5197,7 +5282,6 @@ illustrates the results.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Table formatting precedence.},label={lis:Table-formatting-precedence.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5268,7 +5352,6 @@ item is the cell and the number of cells match the number of rows.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A basic table.},label={lis:A-basic-table.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5382,7 +5465,6 @@ to ensure the document is displayed correctly (Figure \ref{fig:overflow-table}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Example of table overflow in a table.},label={lis:overflow-Example-of-table},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5436,7 +5518,6 @@ add another loop where you check for column overflow using the \texttt{GetOverfl
 method. Figure \ref{fig:col-overflow-An-example-of} illustrates the
 resulting table.\bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={An example of column overflow in a table.},label={lis:col-over-An-example-of},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5499,7 +5580,6 @@ to a table (Figure \ref{fig:fig-Adding-page-elements}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding page elements to table cells.},label={lis:cells-Adding-page-elements},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5575,7 +5655,6 @@ You can use the \texttt{AutoLayout}\index{AutoLayout} class to add images automa
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using AutoLayout to create a PDF document.},label={lis:autolayout-table},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -5636,8 +5715,8 @@ allows you to easily create complex and professional appearing charts.
 \chapter{Charts I}\label{chap:Charts}
 \color{black}
 \BgThispage
-
-In this chapter and the next, you’ll explore the powerful charting capabilities of DynamicPDF Core Suite for .NET. With these tools, you can create detailed and visually striking charts that effectively convey complex information. By the end of the next chapter, you’ll likely agree that DynamicPDF Core Suite offers one of the best-in-class charting solutions for generating PDF documents. That said, grab a coffee—these next two chapters are among the most challenging in this book!
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter and the next, you’ll explore the powerful charting capabilities of DynamicPDF Core Suite for .NET. With these tools, you can create detailed and visually striking charts that effectively convey complex information. By the end of the next chapter, you’ll likely agree that DynamicPDF Core Suite offers one of the best-in-class charting solutions for generating PDF documents. That said, grab a coffee—these next two chapters are among the most challenging in this book!
 
 DynamicPDF Core Suite for .NET includes built-in support for six different chart types. Since these charts are vector-based, they can be scaled without losing resolution. As with other page elements in Core Suite, charts can be placed anywhere within a document. The available chart types include:
 \begin{itemize}
@@ -5786,7 +5865,6 @@ background, while the plot area's background is tan (Figure \ref{mar:A-simple-pi
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a simple chart.},label={lis:chart-simple-create},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Series;
@@ -5876,12 +5954,11 @@ placed below the previous title.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a plot area to a chart.},label={lis:Adding-a-plot},basicstyle={\small\ttfamily},breaklines=true]
-
 private static void AddPlot(Chart chart, float wdth, float hght)
 {
    chart.PrimaryPlotArea.BackgroundColor = RgbColor.Tan;
    chart.PrimaryPlotArea.TopTitles.Add(new Title("The Plot Area Top"));
-   chart.PrimaryPlotArea.BottomTitles.Add(new Title("The Plot Area Bottom"));	     	
+   chart.PrimaryPlotArea.BottomTitles.Add(new Title("The Plot Area Bottom"));         
    PieSeries pieSeries = new PieSeries();
    ScalarDataLabel dataLabel = new ScalarDataLabel(true, false, false);
    pieSeries.DataLabel = dataLabel;
@@ -5949,7 +6026,6 @@ changed.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Customizing a legend.},label={lis:Customizing-a-legend.},basicstyle={\small\ttfamily},breaklines=true]
-
 private static void CustomizeLegend(Chart chart, PieSeries series)
 {
     chart.Legends.Placement = LegendPlacement.BottomLeft;
@@ -6016,7 +6092,6 @@ illustrates the resulting pie chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A pie chart example.},label={lis:A-pie-chart},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Series;
@@ -6123,7 +6198,6 @@ chart with three series and four values (Figure \ref{mar:bar-chart-A-simple-bar}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A simple bar chart with indexed data.},label={lis:A-simple-bar},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6192,7 +6266,6 @@ the resulting bar chart.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A simple bar chart with date/time data.},label={lis:A-simple-bar-datetime1},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6343,7 +6416,6 @@ the resulting chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked bar chart with indexed data example.},label={lis:Stacked-bar-chart},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6451,7 +6523,6 @@ results is a stacked date/time bar chart (Figure \ref{mar:A-date/time-stacked}).
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A date/time stacked bar chart.},label={lis:A-date/time-stacked},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6553,7 +6624,6 @@ namespace ChapterExamples.Chapters.ChapterTen
             Chart chart = new Chart(0, 0, 500, 500);
 
             Indexed100PercentStackedBarSeries stackedBarSeries = new Indexed100PercentStackedBarSeries();
- 
             Indexed100PercentStackedBarSeriesElement se = new Indexed100PercentStackedBarSeriesElement("A");
             se.Values.Add(new float[] { 5, 7, 9, 6 });
             Indexed100PercentStackedBarSeriesElement se2 = new Indexed100PercentStackedBarSeriesElement("B");
@@ -6566,7 +6636,6 @@ namespace ChapterExamples.Chapters.ChapterTen
             stackedBarSeries.Add(se3);
 
             chart.PrimaryPlotArea.Series.Add(stackedBarSeries);
-
             stackedBarSeries.YAxis.Labels.Add(new IndexedYAxisLabel("P1", 0));
             stackedBarSeries.YAxis.Labels.Add(new IndexedYAxisLabel("P2", 1));
             stackedBarSeries.YAxis.Labels.Add(new IndexedYAxisLabel("P3", 2));
@@ -6605,7 +6674,6 @@ is the resulting chart.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked 100\% data/time bar chart.},label={lis:Stacked-100=000025-data/time},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6668,7 +6736,7 @@ as creating bar charts, we only examine examples of an indexed normal
 column chart and a date/time stacked column chart.
 \begin{table}
 \raggedright
-\begin{tabular}{p{0.45\textwidth}p{0.5\textwidth}}
+\begin{tabular}{p{0.47\textwidth}p{0.47\textwidth}}
 \toprule 
 {\scriptsize Series Class} & {\scriptsize Element Class}\tabularnewline
 \midrule
@@ -6695,12 +6763,10 @@ chart.
 
 \begin{figure}
 \includegraphics[scale=0.5]{figures/ch10/fig13}\caption{Column chart with indexed data.}\label{mar:Column-chart-with}
-
 \end{figure}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Column chart with indexed data.},label={lis:Column-chart-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6722,12 +6788,9 @@ namespace ChapterExamples.Chapters.ChapterTen
             cs2.Values.Add(new float[] { 4, 2, 5, 8 });
             IndexedColumnSeries cs3 = new IndexedColumnSeries("C");
             cs3.Values.Add(new float[] { 2, 4, 6, 9 });
-
-
             chart.PrimaryPlotArea.Series.Add(cs);
             chart.PrimaryPlotArea.Series.Add(cs2);
             chart.PrimaryPlotArea.Series.Add(cs3);
-
             cs.XAxis.Labels.Add(new IndexedXAxisLabel("P1", 0));
             cs.XAxis.Labels.Add(new IndexedXAxisLabel("P2", 1));
             cs.XAxis.Labels.Add(new IndexedXAxisLabel("P3", 2));
@@ -6754,7 +6817,6 @@ is the resulting chart created.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked column chart of indexed data.},label={lis:Stacked-column-chart},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
 using ceTe.DynamicPDF.PageElements.Charting.Series;
@@ -6843,7 +6905,6 @@ produced chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Property precedence using bar chart.},label={lis:Property-precedence-using},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -6931,7 +6992,6 @@ layout all chart elements.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Auto-layout example.},label={lis:Auto-layout-example.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AutoLayoutExample(string outPath)
 {
     Document doc = new();
@@ -7002,7 +7062,6 @@ is illustrated in Figure \ref{fig:Manually-laying-out}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Manually setting plot area and legend.},label={lis:Manually-setting-plot},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Series;
@@ -7015,17 +7074,15 @@ namespace ChapterExamples.Chapters.ChapterTen
         {
             Document doc = new();
             doc.Pages.Add(new Page(PageSize.Letter, PageOrientation.Landscape));
-
             float hght = doc.Pages[0].Dimensions.Height - doc.Pages[0].Dimensions.TopMargin * 2;
             float wdth = doc.Pages[0].Dimensions.Width - doc.Pages[0].Dimensions.RightMargin * 2;
-
+            
             Chart chart = new Chart(0, 0, wdth, hght);
             chart.BackgroundColor = RgbColor.Teal;
             chart.AutoLayout = false;
-
+            
             PlotArea plotArea = chart.PlotAreas.Add(100, 100, wdth / 2, hght * .75F);
             plotArea.BackgroundColor = RgbColor.Tan;
-
             Legend legend1 = chart.Legends.Add(470, 250, 40, 100);
             legend1.BackgroundColor = RgbColor.LightGrey;
             legend1.BorderWidth = 1;
@@ -7042,7 +7099,6 @@ namespace ChapterExamples.Chapters.ChapterTen
             PieSeriesElement pe2 = new(20, "B ", RgbColor.LightBlue);
             PieSeriesElement pe3 = new(13, "C ", RgbColor.LightGoldenRodYellow);
             PieSeriesElement pe4 = new(17, "D ", RgbColor.LightGreen);
-
             pieSeries.Elements.Add(pe1);
             pieSeries.Elements.Add(pe2);
             pieSeries.Elements.Add(pe3);
@@ -7102,7 +7158,6 @@ chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Modifying a chart's layout manually.},label={lis:Modifying-a-chart's},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Series;
@@ -7115,7 +7170,6 @@ namespace ChapterExamples.Chapters.ChapterTen
         {
             Document doc = new();
             doc.Pages.Add(new Page(PageSize.Letter, PageOrientation.Landscape));
-
             float hght = doc.Pages[0].Dimensions.Height - doc.Pages[0].Dimensions.TopMargin * 2;
             float wdth = doc.Pages[0].Dimensions.Width - doc.Pages[0].Dimensions.RightMargin * 2;
 
@@ -7128,14 +7182,12 @@ namespace ChapterExamples.Chapters.ChapterTen
             pieSeries.BorderColor = RgbColor.Red;
             pieSeries.BorderWidth = 1;
             pieSeries.DataLabel = dataLbl;
-
             chart.PrimaryPlotArea.Series.Add(pieSeries);
 
             PieSeriesElement pe1 = new(10, "A ", RgbColor.LightCoral);
             PieSeriesElement pe2 = new(20, "B ", RgbColor.LightBlue);
             PieSeriesElement pe3 = new(13, "C ", RgbColor.LightGoldenRodYellow);
             PieSeriesElement pe4 = new(17, "D ", RgbColor.LightGreen);
-
             pieSeries.Elements.Add(pe1);
             pieSeries.Elements.Add(pe2);
             pieSeries.Elements.Add(pe3);
@@ -7144,15 +7196,14 @@ namespace ChapterExamples.Chapters.ChapterTen
             chart.Legends[0].BackgroundColor = RgbColor.LightGrey;
             chart.Legends[0].BorderWidth = 1;
             chart.Legends[0].BorderColor = RgbColor.Red;
-
+            
             chart.AutoLayout = false;
             chart.Layout();
-
+            
             chart.PrimaryPlotArea.X = 100;
             chart.PrimaryPlotArea.Y = 100;
             chart.PrimaryPlotArea.Width = wdth / 2;
             chart.PrimaryPlotArea.Height = hght * .75F;
-
             chart.Legends[0].X = 470;
             chart.Legends[0].Y = 250;
 
@@ -7208,7 +7259,6 @@ PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A chart with two plot areas.},label={lis:two-plot-A-chart-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7305,7 +7355,6 @@ You can use the \texttt{AutoLayout}\index{AutoLayout} class to add charts automa
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using AutoLayout to create a PDF document.},label={lis:autolayout-chart},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.PageElements.Charting;
@@ -7372,8 +7421,8 @@ Suite for .NET.
 \chapter{Charts II}\label{chap:Charts-II}
 \color{black}
 \BgThispage
-
-In the previous chapter, you learned how to create pie, bar, and column charts, as well as how to work with plot areas, legends, and multiple plot areas. This chapter builds on that foundation by introducing line, area, and scatter charts. Additionally, we explore how to customize the x and y axes, add symbols, tick marks, and grid lines, incorporate markers, and modify data labels.
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} the previous chapter, you learned how to create pie, bar, and column charts, as well as how to work with plot areas, legends, and multiple plot areas. This chapter builds on that foundation by introducing line, area, and scatter charts. Additionally, we explore how to customize the x and y axes, add symbols, tick marks, and grid lines, incorporate markers, and modify data labels.
 
 \section{Line Chart}\label{sec:Line-Chart}
 
@@ -7437,7 +7486,6 @@ illustrates the resulting line chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Line chart using indexed data.},label={lis:Line-indx-chart-using},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7475,7 +7523,7 @@ namespace ChapterExamples.Chapters.ChapterEleven
             ls.XAxis.Labels.Add(new IndexedXAxisLabel("SE", 2));
             ls.XAxis.Labels.Add(new IndexedXAxisLabel("NE", 3));
 
-			ls.YAxis.Titles.Add(new Title("Items"));
+      ls.YAxis.Titles.Add(new Title("Items"));
             ls.XAxis.Titles.Add(new Title("Region"));
 
             doc.Pages[0].Elements.Add(chart);
@@ -7521,7 +7569,6 @@ illustrates the resulting chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Line chart using date/time data.},label={lis:Line-dt-chart-using},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7609,7 +7656,6 @@ the resulting chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked indexed line chart.},label={lis:Stacked-indexed-line-chart},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7692,7 +7738,6 @@ illustrates the resulting chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked date/time line chart.},label={lis:Stacked-date/time-line},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7773,7 +7818,6 @@ resulting chart.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked 100\% indexed line chart.},label={lis:line-Stacked-100=000025-indexed},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7843,7 +7887,6 @@ illustrates the resulting chart.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked 100\% date/time line chart.},label={lis:dt-Stacked-100=000025-date/time},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7958,7 +8001,6 @@ illustrates the resulting chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Area chart using indexed data.},label={lis:indexded-Area-chart-using},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -7968,7 +8010,6 @@ namespace ChapterExamples.Chapters.ChapterEleven
 {
     public class AreaChartExample
     {
-
         public static void Create(string outputPath)
         {
             Document doc = new();
@@ -7988,9 +8029,7 @@ namespace ChapterExamples.Chapters.ChapterEleven
             chart.PrimaryPlotArea.Series.Add(as1);
             chart.PrimaryPlotArea.Series.Add(as2);
 
-           
             as1.YAxis.Titles.Add(new Title("Items"));
-
             as1.XAxis.Labels.Add(new IndexedXAxisLabel("NW", 0));
             as1.XAxis.Labels.Add(new IndexedXAxisLabel("SW", 1));
             as1.XAxis.Labels.Add(new IndexedXAxisLabel("SE", 2));
@@ -7998,7 +8037,6 @@ namespace ChapterExamples.Chapters.ChapterEleven
 
             Title title2 = new Title("Region");
             as1.XAxis.Titles.Add(title2);
-
 
             doc.Pages[0].Elements.Add(chart);
             doc.Draw(outputPath + "area-indexed-chart-out.pdf");
@@ -8040,7 +8078,6 @@ A and B, and B is the cumulative value.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Stacked area chart with date/time data.},label={lis:Stacked-area-chart},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Axes;
@@ -8119,7 +8156,6 @@ the resultant chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Scatter chart.},label={lis:Scatter-chart.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Charting;
 using ceTe.DynamicPDF.PageElements.Charting.Series;
@@ -8130,7 +8166,7 @@ namespace ChapterExamples.Chapters.ChapterEleven
     {
         public static void Create(string outputPath)
         {
-			Document doc = new Document();
+      Document doc = new Document();
             doc.Pages.Add(new Page(PageSize.Letter, PageOrientation.Landscape));
 
             float hght = doc.Pages[0].Dimensions.Height - doc.Pages[0].Dimensions.TopMargin * 2;
@@ -8237,7 +8273,6 @@ chart.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Gridlines and tick-marks on a line chart.},label={lis:Gridlines-and-tick-marks},basicstyle={\small\ttfamily},breaklines=true]
-
 chart.PrimaryPlotArea.XAxes.DefaultIndexedAxis.MajorGridLines = new XAxisGridLines();
 chart.PrimaryPlotArea.XAxes.DefaultIndexedAxis.MinorGridLines = new XAxisGridLines();
 chart.PrimaryPlotArea.YAxes.DefaultNumericAxis.MajorGridLines = new YAxisGridLines();
@@ -8286,13 +8321,11 @@ illustrates the resulting chart's appearance.
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Modifying axes labels.},label={lis:Modifying-axes-labels.},basicstyle={\small\ttfamily},breaklines=true]
-
 ls.XAxis.Labels.Angle = 45;
 ls.XAxis.LabelOffset = 5;
 ls.XAxis.Labels.TextColor = RgbColor.Navy;
 ls.XAxis.TitlePosition = XAxisTitlePosition.AboveXAxis;
 ls.XAxis.Titles[0].TextColor = RgbColor.Navy;
-
 ls.YAxis.LabelPosition = YAxisLabelPosition.RightOfPlotArea;
 ls.YAxis.LabelOffset = 5;
 ls.YAxis.Labels.TextColor = RgbColor.IndianRed;
@@ -8324,7 +8357,6 @@ the resulting chart.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding markers to a series.},label={lis:Adding-markers-to},basicstyle={\small\ttfamily},breaklines=true]
-
 ls.Marker = Marker.GetCross(10);
 ls2.Marker = Marker.GetDiamond(10);
 ls3.Marker = Marker.GetCircle(10);
@@ -8335,7 +8367,6 @@ However, you can modify the data point markers for this series.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding markers to a scatter plot.},label={lis:scatterplot-Adding-markers-to-1},basicstyle={\small\ttfamily},breaklines=true]
-
 xys.Marker = Marker.GetCircle(10);
 xys2.Marker = Marker.GetDiamond(10);
 \end{lstlisting}
@@ -8481,11 +8512,8 @@ are added in the stack order in which they are added to a page. Figure
 \end{figure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding page elements to a chart.},label={lis:chart-Adding-page-elements},basicstyle={\small\ttfamily},breaklines=true]
-
 doc.Pages[0].Elements.Add(chart);
-
 Image img = new(resourcePath + "logo.png", 25, 15, .20F);
-
 Label lb = new Label("Upward Trend", 90, 225, 100, 0);
 lb.TextColor = RgbColor.ForestGreen;
 lb.Angle = -30;
@@ -8505,8 +8533,8 @@ With this, we have completed our overview of the charting features available in 
 \chapter{Bar Codes}\label{chap:Barcodes}
 \color{black}
 \BgThispage
-
-A bar code represents data in a visual, machine-readable form. One-dimensional
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{B}{ar} codes represents data in a visual, machine-readable form. One-dimensional
 (1D) bar codes represent data by varying the widths, space, and parallel
 line size (Figure \ref{mar:A-one-dimensional-bar}). These bar codes
 are scanned by optical bar code readers. 
@@ -8623,7 +8651,6 @@ illustrates the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={UPC codes added to a PDF document.},label={lis:UPC-codes-added},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.PageElements.BarCoding;
@@ -8711,7 +8738,6 @@ a PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding EAN codes to a PDF document.},label={lis:Adding-EAN-codes},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.PageElements.BarCoding;
@@ -8781,20 +8807,16 @@ namespace ChapterExamples.Chapters.ChapterTwelve
 
 
 \section{QR Code}
-
-A quick-response code (QR) is a two-dimensional matrix bar code that
-contains black squares on a white background and is readable by imaging
-devices like your cellphone. Listing \ref{lis:Adding-a-QR} illustrates adding a QR code to a PDF document. First, you create a
+A quick-response code (QR) is a two-dimensional matrix bar code containing black squares on a white background readable by imaging
+devices like a cellphone. Listing \ref{lis:Adding-a-QR} illustrates adding a QR code to a PDF document. First, you create a
 new \texttt{QRCode}\index{QRCode} instance where in the constructor it adds a URL
 as text. You then add the QR code to the page as a page element (Figure
 \ref{fig:A-QR-code}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a QR code to a PDF document.},label={lis:Adding-a-QR},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.BarCoding;
-
 namespace ChapterExamples.Chapters.ChapterTwelve
 {
     public class QRCodeExample
@@ -8835,7 +8857,6 @@ illustrates the resulting Aztec code.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding an Aztec code to a PDF document.},label={lis:Adding-an-Aztec},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.BarCoding;
 
@@ -8862,7 +8883,6 @@ You can use the \texttt{AutoLayout}\index{AutoLayout} class to add barcodes auto
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using AutoLayout to create a PDF document.},label={lis:autolayout-barcode},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.PageElements.BarCoding;
@@ -8891,8 +8911,8 @@ This chapter provided a brief overview of bar codes. Adding bar codes to PDF doc
 \chapter{Outlines and Bookmarks}\label{chap:Adding-Bookmarks-and}
 \color{black}
 \BgThispage
-
-This chapter teaches you how to create bookmarks and add outlines
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{T}{his} chapter teaches you how to create bookmarks and add outlines
 to your PDF documents. First, you learn how to add outlines and child
 outlines to a PDF document to create a table of contents. We also
 examine adding actions to an outline. After discussing outlines, we
@@ -8964,7 +8984,6 @@ the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding an outline.},label={lis:Adding-and-outline},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -9003,7 +9022,6 @@ namespace ChapterExamples.Chapters.ChapterThirteen
             doc.Pages.Add(new Page(PageSize.Letter));
             doc.Pages[i].Elements.Add(txtOne);
         }
-
     }
 }
 \end{lstlisting}
@@ -9042,16 +9060,11 @@ Then, you add two more sub menus (Section One and Section Two) under
 Chapter One, linking to pages seven and nine, respectively. These
 entries form a hierarchical structure in the table of contents. After
 creating entries for chapter one, you add a new child outline for Chapter
-Two, linking to page ten. Finally, you loop through all child outline
+Two, linking to page ten. Finally, after creating the entries and the child outline, you loop through all child outline
 instances and ensure they are collapsed. Figure \ref{fig:chiled-Adding-an-outline-1}
 is the resulting PDF.
-\begin{figure}[h]
-\includegraphics[scale=0.5]{figures/ch13/fig2}\caption{Adding an outline with child outlines to a PDF document.}\label{fig:chiled-Adding-an-outline-1}
-\end{figure}
-
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={PDF document with child outlines.},label={lis:child-PDF-document-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -9103,7 +9116,9 @@ namespace ChapterExamples.Chapters.ChapterThirteen
 }
 \end{lstlisting}
 \leavevmode\egroup
-
+\begin{figure}[h]
+\includegraphics[scale=0.5]{figures/ch13/fig2}\caption{Adding an outline with child outlines to a PDF document.}\label{fig:chiled-Adding-an-outline-1}
+\end{figure}
 As Figure \ref{fig:chiled-Adding-an-outline-1} illustrates, the code
 generates a 16-page PDF, organized the content with a hierarchical
 outline structure, and collapses the outline entries by default. The
@@ -9144,7 +9159,6 @@ when the PDF is opened.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Multiple outlines.},label={lis:multiple-out-A-PDF-document-1},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -9255,7 +9269,6 @@ illustrates the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Outline actions.},label={lis:illus-out-acti-A-PDF-document-1},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -9280,7 +9293,7 @@ namespace ChapterExamples.Chapters.ChapterThirteen
             outline.ChildOutlines.Add("pg1", new XYDestination(1, 0, 0));
             outline.ChildOutlines.Add("pg2", new XYDestination(2, 400, 500));
             outline.ChildOutlines.Add("pg3", new ZoomDestination(4, PageZoom.FitPage));
-			outline.ChildOutlines.Add("DynamicPDF Website", new UrlAction("https://www.dynamicpdf.com"));
+      outline.ChildOutlines.Add("DynamicPDF Website", new UrlAction("https://www.dynamicpdf.com"));
         
             doc.Draw(outputPath);
         }
@@ -9327,7 +9340,6 @@ is the resultant PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={PDF document with bookmarks.},label={lis:bookmarkes=00003DPDF-document-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -9417,7 +9429,6 @@ illustrates the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Pdf with outline and bookmarks.},label={lis:outline-book-Pdf-document-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -9511,8 +9522,8 @@ then you use outlines.
 \chapter{Securing PDF Documents}\label{chap:Security,-Signing-and}
 \color{black}
 \BgThispage
-
-When creating PDF documents, it's often crucial to ensure that only
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{W}{hen} creating PDF documents, it's often crucial to ensure that only
 designated people can read or modify them. Sharing a PDF containing
 sensitive information necessitates measures to protect it. Keeping
 your PDFs secure ensures that documents are not modified, limits access
@@ -9618,7 +9629,8 @@ Attempting to use a restricted requires entering the owner password.
 \end{tabularx}\protect\caption{Encryption algorithm and allowed restrictions.}\label{tab:User-access-permissions}
 
 \end{table}
-Example}
+}
+\subsection{Example}
 
 Listing \ref{lis:Encrypting-and-signing} illustrates using all four
 encryption methods. First, you use the \texttt{RC440Security}\index{RC440Security} class
@@ -9641,7 +9653,6 @@ your password protected PDF document encrypted using 128-bit RC4 security.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Encrypting and signing a PDF document.},label={lis:Encrypting-and-signing},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Cryptography;
 using ceTe.DynamicPDF.PageElements;
@@ -9668,7 +9679,7 @@ namespace ChapterExamples.Chapters.ChapterFourteen
             doc.Draw(outputPath + "rc440-sig-out.pdf");
         }
 
-  	  public static void Rc4128Example(string outputPath)
+      public static void Rc4128Example(string outputPath)
         {
             Document doc = new();
             doc.Pages.Add(new Page(PageSize.Letter));
@@ -9767,12 +9778,12 @@ let's first create a self-signed certificate to use in our examples.
 
 Before we create a self-signed certificate, note that in production,
 you would always use a certificate issued from a valid certificate
-authority, not a self-signed certificate as we do here. But these
+authority, not a self-signed certificate as we do here.\marginnote{There are numerous online resources providing instructions on creating
+self-signed certificates. For example, https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-self-signed-certificate} But these
 certificates are useful for your development efforts and are free
 and easily made. Albeit, they provide no trust value. Public key certificates
 not issued by a certificate authority (CA) are called self-signed
-certificates. \sidenote{There are numerous online resources providing instructions on creating
-self-signed certificates. For example, https://learn.microsoft.com/en-us/entra/identity-platform/howto-create-self-signed-certificate} Although we do not discuss in detail how to create a self-signed
+certificates. Although we do not discuss in detail how to create a self-signed
 certificate, here's the Microsoft Powershell commands I used to create
 a self-signed certificate for this chapter. First I created the certificate,
 then I exported it as a \texttt{.pfx}\index{.pfx} certificate.
@@ -9814,7 +9825,6 @@ and \texttt{CertifyingPermission.NoChangesAllowed}\index{CertifyingPermission.No
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Certify method signatures.},label={lis:Certify-method-signatures.},basicstyle={\small\ttfamily},breaklines=true]
-
 public void Certify(string fieldName, Certificate certificate, bool timeStamp, CertifyingPermission permission)
 public void Certify(string fieldName, Certificate certificate, CertifyingPermission permissions)
 public void Certify(string fieldName, Certificate certificate, TimestampServer timestampServer, CertifyingPermission permission)
@@ -9833,7 +9843,6 @@ the certificate's password. Next, you call the \texttt{Certify}\index{Certify} m
 and pass a certificate name, \texttt{Certificate}\index{Certificate} instance, and disable
 all document editing.\bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Certifying a PDF Document.},label={lis:Certifying-a-PDF},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Forms;
 
@@ -9841,16 +9850,14 @@ namespace ChapterExamples.Chapters.ChapterFourteen
 {
     public class DigitalCertificateExample
     {
-
         public static void Create(string inputPath, string outputPath)
         {
             Document doc = new();
             doc.Pages.Add(new Page(PageSize.Letter));
-		    Certificate certificate = new Certificate(inputPath, "password");
-		    doc.Certify("my_certificate", certificate, CertifyingPermission.NoChangesAllowed);
+        Certificate certificate = new Certificate(inputPath, "password");
+        doc.Certify("my_certificate", certificate, CertifyingPermission.NoChangesAllowed);
             doc.Draw(outputPath + "invis-dig-cert-out.pdf");
         }
-
     }
 }
 \end{lstlisting}
@@ -9919,7 +9926,6 @@ not presented here, as it is simply a blank page.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Signing a PDF document.},label={lis:Signing-a-PDF},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements.Forms;
 
@@ -9927,14 +9933,13 @@ namespace ChapterExamples.Chapters.ChapterFourteen
 {
     public class DigitalSignatureExample
     {
-
         public static void Create(string inputPath, string outputPath)
         {
-			VisibleCertify(inputPath, outputPath)
+            VisibleCertify(inputPath, outputPath)
             SignVisible(inputPath, outputPath);
             SignInVisible(inputPath, outputPath);
         }
-
+        
         public static void VisibleCertify(string inputPath, string outputPath)
         {
             Document doc = new();
@@ -9946,7 +9951,7 @@ namespace ChapterExamples.Chapters.ChapterFourteen
             doc.Certify("signature_field", certificate, CertifyingPermission.NoChangesAllowed);
             doc.Draw(outputPath + "vis-dig-cert-out.pdf");
         }
-
+        
         public static void SignVisible(string inputPath, string outputPath)
         {
             Document doc = new();
@@ -9959,7 +9964,7 @@ namespace ChapterExamples.Chapters.ChapterFourteen
             doc.Sign("signature_field", certificate);
             doc.Draw(outputPath + "vis-dig-sig-out.pdf");
         }
-
+        
         public static void SignInVisible(string inputPath, string outputPath)
         {
             Document doc = new();
@@ -9984,9 +9989,7 @@ validity cannot be established. Note that we can easily examine a
 signature's properties and validity status by clicking on the certificate.
 You can also view the signature panel by clicking the \textbf{Signature
 Panel} button in the document's top right (Figure \ref{fig:Viewing-a-signature's}). 
-
 \subsection{Signature Image}
-
 You can also add an image to a Signature to mimic a handwritten signature.
 For example, Listing \ref{lis:Signing-a-PDF} illustrates adding a
 method to the code in Listing \ref{lis:Signing-a-PDF}. The code is
@@ -10002,22 +10005,21 @@ signature.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Signing a PDF document.},label={lis:img-=000020Signing-a-PDF-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SignVisibleWithImage(string inputPath, string outputPath)
 {
-	Document doc = new();
-	doc.Pages.Add(new Page(PageSize.Letter));
-	doc.Pages[0].Elements.Add(new Label("Signed By: ", 0, 100, 75, 0));
+  Document doc = new();
+  doc.Pages.Add(new Page(PageSize.Letter));
+  doc.Pages[0].Elements.Add(new Label("Signed By: ", 0, 100, 75, 0));
 
-	Signature signature = new("signature_field", 75,50, 200, 85);
-	signature.FullPanel.SetImage(inputPath + "signature.png");
-	signature.LeftPanel.HideAllText();
-	signature.RightPanel.HideAllText();
-	doc.Pages[0].Elements.Add(signature);
+  Signature signature = new("signature_field", 75,50, 200, 85);
+  signature.FullPanel.SetImage(inputPath + "signature.png");
+  signature.LeftPanel.HideAllText();
+  signature.RightPanel.HideAllText();
+  doc.Pages[0].Elements.Add(signature);
 
-	Certificate certificate = new Certificate(inputPath + "JohnDoe.pfx", "password");
-	doc.Sign("signature_field", certificate);
-	doc.Draw(outputPath + "vis-dig-sig-img-out.pdf");
+  Certificate certificate = new Certificate(inputPath + "JohnDoe.pfx", "password");
+  doc.Sign("signature_field", certificate);
+  doc.Draw(outputPath + "vis-dig-sig-img-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -10058,10 +10060,9 @@ time stamping the PDF document created by Listing \ref{lis:Signing-a-PDF}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a timestamp to a PDF document's signature.},label={lis:Adding-a-timestamp},basicstyle={\small\ttfamily},breaklines=true]
-
-TimestampServer timestampServer = new TimestampServer("http://timestamp.digicert.com/");
+TimestampServer tmstampServer = new TimestampServer("http://timestamp.digicert.com/");
 Certificate certificate = new Certificate(inputPath, "password");
-doc.Sign("signature_field", certificate, timestampServer);
+doc.Sign("signature_field", certificate, tmstampServer);
 \end{lstlisting}
 \leavevmode\egroup
 
@@ -10113,8 +10114,8 @@ With the techniques presented in this chapter, you can now secure your PDFs thro
 \chapter{Creating Interactive Forms}\label{chap:Interactive-Forms}
 \color{black}
 \BgThispage
-
-Using DynamicPDF Core Suite for .NET, you can create interactive forms that allow users to complete and save or submit completed forms via HTTP GET or POST. (We will discuss submitting forms in Chapter \ref{chap:Submitting-Forms}.) These forms can include text fields, drop-down menus, radio buttons, checkboxes, and other form elements, providing a versatile solution for digital form completion.
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{U}{sing} DynamicPDF Core Suite for .NET, you can create interactive forms that allow users to complete and save or submit completed forms via HTTP GET or POST. (We will discuss submitting forms in Chapter \ref{chap:Submitting-Forms}.) These forms can include text fields, drop-down menus, radio buttons, checkboxes, and other form elements, providing a versatile solution for digital form completion.
 
 Interactive forms, also known as AcroForms, support various field types, such as button fields, choice fields, text fields, and signature fields. An AcroForm can contain any combination of these fields across multiple pages, forming a single form. However, note that only one form can exist per PDF document.
 
@@ -10153,7 +10154,6 @@ the label and checkbox to the document's page.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a CheckBox.},label={lis:Creating-a-CheckBox.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddCheckBox(Document doc)
 {
     Label label = new("Completed Book?", 0, 0, 100, 0);
@@ -10190,7 +10190,6 @@ the \texttt{radio2} radio button selected.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a RadioButton.},label={lis:Creating-a-RadioButton.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddRadioButton(Document doc)
 {
     Label label = new("Position:", 0, 50, 100, 0);
@@ -10209,8 +10208,8 @@ public static void AddRadioButton(Document doc)
 
     Label label2 = new("(red, yellow, blue)", 250, 50, 100, 0);
     doc.Pages[0].Elements.Add(label);
-	doc.Pages[0].Elements.Add(label2);
-	doc.Pages[0].Elements.Add(radio1);
+  doc.Pages[0].Elements.Add(label2);
+  doc.Pages[0].Elements.Add(radio1);
     doc.Pages[0].Elements.Add(radio2);
     doc.Pages[0].Elements.Add(radio3);
 }
@@ -10238,7 +10237,6 @@ field to a PDF Document (Figure \ref{mar:A-TextField-element.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a TextField element.},label={lis:Creating-a-TextField},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddTextField(Document doc)
 {
     Label label = new Label("Full Name:", 0, 105, 75, 0);
@@ -10258,7 +10256,6 @@ text field (Figure \ref{mar:A-multi-line-TextField}).
 \end{marginfigure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a multi-line TextField element.},label={lis:Creating-a-multi-line},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddMultiLineTextField(Document doc)
 {
     Label label = new Label("Description:", 0, 150, 75, 0);
@@ -10272,8 +10269,10 @@ public static void AddMultiLineTextField(Document doc)
 \leavevmode\egroup
 
 
-\section{List Boxes}
+\section{List Boxes and Combo Boxes}
+List boxes and combo boxes provide users with structured ways to select predefined values within an interactive PDF form. While both elements present a list of choices, they differ in how users interact with those options and whether custom input is allowed. A \texttt{ListBox}\index{ListBox} displays multiple visible items and can support multi-selection, making it ideal for scenarios where users may choose more than one value. A \texttt{ComboBox}\index{ComboBox}, by contrast, combines a drop-down list with an editable text field, allowing users to either select from predefined options or enter their own response.
 
+\subsection{List Boxes}
 A list box element allows a user to select items from a list within
 a multi-line text box. It inherits the \texttt{FormElement}\index{FormElement} parent
 class's properties in addition to its own specific properties. A \texttt{ListBox}\index{ListBox}
@@ -10295,7 +10294,6 @@ by cntrl-clicking the items in the list.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a ListBox element.},label={lis:Creating-a-ListBox},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddListBox(Document doc)
 {
     Label label = new("Selected Days:", 0, 375, 100, 0);
@@ -10317,7 +10315,7 @@ public static void AddListBox(Document doc)
 \leavevmode\egroup
 
 
-\section{Combo Boxes}
+\subsection{Combo Boxes}
 
 A \texttt{ComboBox}\index{ComboBox} is a drop-down list combined with a single-line
 editable \texttt{TextField}\index{TextField}. users can select from the list values
@@ -10338,7 +10336,6 @@ selecting one of the choices or enter a different value (Figure \ref{fig:Selecti
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a ComboBox element.},label={lis:Creating-a-ComboBox},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddComboBox(Document doc)
 {
     Label label = new("Favorite Color:", 0, 575, 100, 0);
@@ -10381,7 +10378,6 @@ instances and adding them to a document's page (Figure \ref{mar:A-Button-element
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating two Button elements.},label={lis:Creating-two-Button},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddButtons(Document doc)
 {
     Button button = new Button("submit", 100, 625, 110, 20);
@@ -10427,7 +10423,6 @@ and a push image (Figure \ref{mar:behavior-pushA-button-with}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A button with images.},label={lis:A-button-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Imaging;
 using ceTe.DynamicPDF.PageElements.Forms;
@@ -10440,14 +10435,17 @@ namespace ChapterExamples.Chapters.ChapterFifteen
         {
             Document doc = new Document();
             doc.Pages.Add(new Page(PageSize.Letter));
+            
             Button button = new Button("Submit", 100, 625, 75, 25);
             button.BackgroundColor = RgbColor.LightBlue;
             button.BorderStyle = BorderStyle.Beveled;
             button.Image = ImageData.GetImage(inputPath + "/button.png");
             button.LabelImageLayout = LabelImageLayoutOptions.OverlayImage;
             button.ImageAppearance.FitToBounds = true;
+            
             button.Behavior = Behavior.CreatePush("Down", "Rollover", ImageData.GetImage(inputPath + "/push-down.png"), ImageData.GetImage(inputPath + "/rollover.png"));
             button.Label = "Click Me";
+            
             doc.Pages[0].Elements.Add(button);
             doc.Draw(outputPath + "button-behavior-out.pdf");
         }
@@ -10480,7 +10478,6 @@ the document, but rather, the end user is signing it.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a simple form with a Signature element.},label={lis:sig-Creating-a-simple},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.PageElements.Forms;
@@ -10592,8 +10589,8 @@ actions Core Suite provides and learn how to use them.
 \chapter{Making PDFs Interactive}\label{chap:Actions-and-Events}
 \color{black}
 \BgThispage
-
-Event-driven programming (EDP) focuses on events an application listens
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{E}{vent-driven} programming (EDP) focuses on events an application listens
 for and responds to with an action. You can create highly responsive
 and scalable applications by handling events using actions. Event-driven
 programming enables components to react to events. An application's
@@ -10685,7 +10682,6 @@ that opens an alert that tells the user what event was triggered (Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Document events.},label={lis:Document-events.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void DocumentReaderEventsExample(string outputPath)
 {
     Document doc = new();
@@ -10727,7 +10723,6 @@ closed (Figure \ref{fig:Page-events.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Page events.},label={lis:Page-events.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void PageReaderEventsExample(string outputPath)
 {
     Document doc = new();
@@ -10761,7 +10756,6 @@ by the \texttt{AnnotationFieldReaderEvents}\index{AnnotationFieldReaderEvents} (
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Form field events.},label={lis:Form-field-events.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void FormFieldEventsExample()
 {
     Document document = new Document();
@@ -10832,10 +10826,9 @@ labeled "Show" the form field is displayed.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Hiding and showing a form field.},label={lis:Hiding-and-showing},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AnnotationShowHideActionExample(string outputPath)
 {
-	Document doc = new Document();
+  Document doc = new Document();
     doc.Pages.Add(new Page(PageSize.Letter));
 
     Label label2 = new Label("Name:", 0, 50, 75, 0);
@@ -10876,10 +10869,9 @@ illustrates navigating to a URL upon clicking a button.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Navigating to a URL using UrlAction.},label={lis:url-Navigating-to-a},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void UrlActionExample(string outputPath)
 {
-	Document doc = new Document();
+  Document doc = new Document();
     doc.Pages.Add(new Page(PageSize.Letter));
 
     string text = "This is a link to DynamicPDF API.";
@@ -10914,10 +10906,9 @@ navigating to the second page upon pushing a button on the first page.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Navigating to page using GoToAction.},label={lis:Navigating-to-page},basicstyle={\small\ttfamily},breaklines=true,showstringspaces=false]
-
 public static void GoToActionExample(string outputPath)
 {
-	Document doc = new Document();
+  Document doc = new Document();
     doc.Pages.Add(new Page(PageSize.Letter));
     doc.Pages.Add(new Page(PageSize.Letter));
     doc.Pages[0].Elements.Add(new Label("Page 1", 0, 0, 100, 15));
@@ -10949,10 +10940,9 @@ opening a file upon clicking a button.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Opening a file with FileOpenAction.},label={lis:Opening-a-file},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void FileOpenActionExample(string inputPath, string outputPath)
 {
-	Document doc = new Document();
+  Document doc = new Document();
     doc.Pages.Add(new Page(PageSize.Letter));
          
     Button button = new Button("btn", 50, 150, 100, 30);
@@ -10981,7 +10971,6 @@ text field to its default value (Figure \ref{mar:Resetting-a-form's}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Resetting a form's values using ResetAction.},label={lis:Resetting-a-form's},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ResetActionExample(string outputPath)
 {
     Document doc = new Document();
@@ -11011,25 +11000,24 @@ The \texttt{ImportFormDataAction}\index{ImportFormDataAction}, as with the last 
 Listing \ref{lis:import-form-data} illustrates. You build a form and then for the action you attach a new \texttt{ImportFormDataAction}\index{ImportFormDataAction} instance to the button's \texttt{MouseUp}\index{MouseUp} event.
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Importing form data.},label={lis:import-form-data},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ImportFormDataExample(string fileInput, string outputPath)
 {
      Document doc = new Document();
-	doc.Pages.Add(new Page(PageSize.Letter));
-	Label lbl1 = new Label("Name:", 0, 0, 100, 30);
-	TextField textField = new TextField("text_field", 50, 0, 200, 20);
-	Label lbl2 = new Label("Completed:", 0, 50, 75, 0);
-	CheckBox chkBox = new CheckBox("check_field", 75, 50, 20, 20);
-	Button btn = new Button("btn", 0, 100, 100, 30);
-	button.Label = "Import Data";
-	doc.Pages[0].Elements.Add(lbl1);
-	doc.Pages[0].Elements.Add(lbl2);
-	doc.Pages[0].Elements.Add(textField);
-	doc.Pages[0].Elements.Add(chkBox);
-	doc.Pages[0].Elements.Add(btn);
-	ImportFormDataAction action = new ImportFormDataAction("c:/temp/import-form-data-action-data.fdf");
-	button.ReaderEvents.MouseUp = action;
-	doc.Draw(outputPath + "import-form-data-action-output.pdf");
+  doc.Pages.Add(new Page(PageSize.Letter));
+  Label lbl1 = new Label("Name:", 0, 0, 100, 30);
+  TextField textField = new TextField("text_field", 50, 0, 200, 20);
+  Label lbl2 = new Label("Completed:", 0, 50, 75, 0);
+  CheckBox chkBox = new CheckBox("check_field", 75, 50, 20, 20);
+  Button btn = new Button("btn", 0, 100, 100, 30);
+  button.Label = "Import Data";
+  doc.Pages[0].Elements.Add(lbl1);
+  doc.Pages[0].Elements.Add(lbl2);
+  doc.Pages[0].Elements.Add(textField);
+  doc.Pages[0].Elements.Add(chkBox);
+  doc.Pages[0].Elements.Add(btn);
+  ImportFormDataAction action = new ImportFormDataAction("c:/temp/import-form-data-action-data.fdf");
+  button.ReaderEvents.MouseUp = action;
+  doc.Draw(outputPath + "import-form-data-action-output.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -11053,10 +11041,9 @@ and a file is opened.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Chaining multiple actions in a PDF document.},label={lis:Chaining-multiple-actions},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ChainActionExample(string inputPath, string outputPath)
 {
-	Document doc = new Document();
+  Document doc = new Document();
     doc.Pages.Add(new Page(PageSize.Letter));
     doc.Pages.Add(new Page(PageSize.Letter));
 
@@ -11096,8 +11083,8 @@ One action we did not discuss in depth is the \texttt{JavaScriptAction}\index{Ja
 \chapter{Using JavaScript}\label{chap:Using-JavaScript}
 \color{black}
 \BgThispage
-
-In this chapter, you learn how to add JavaScript to your PDF documents.
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter, you learn how to add JavaScript to your PDF documents.
 This is not a chapter on programming PDFs using JavaScript, as that
 would fill an entire book. However, this chapter does discuss how
 to integrate JavaScript into the PDF documents you create using Core
@@ -11204,7 +11191,6 @@ Console} window we see the messages written to the console (Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Accessing Doc object in Adobe Acrobat using JavaScript.},label={lis:Accessing-Doc-object},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 
 namespace ChapterExamples.Chapters.ChapterSeventeen
@@ -11272,10 +11258,9 @@ text.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Javascript to change a field value.},label={lis:Javascript-to-change},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AutoChange(string outputPath)
  {
-	Document doc = new();
+  Document doc = new();
     doc.Pages.Add(new Page(PageSize.Letter));
 
     Label label = new("Favorite Color:", 0, 50, 100, 0);
@@ -11293,9 +11278,9 @@ public static void AutoChange(string outputPath)
     textField.DefaultValue = "no color chosen";
 
     doc.Pages[0].Elements.Add(textField);
-	string javaScript = "this.getField(\"color_desc\").value = \"The color is: \" + this.getField(\"favorite_color\").value;";
-	comboBox.ReaderEvents.OnBlur = new JavaScriptAction(javaScript);
-	doc.Draw(outputPath + "javascript-value-change-out.pdf");
+  string javaScript = "this.getField(\"color_desc\").value = \"The color is: \" + this.getField(\"favorite_color\").value;";
+  comboBox.ReaderEvents.OnBlur = new JavaScriptAction(javaScript);
+  doc.Draw(outputPath + "javascript-value-change-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -11313,10 +11298,9 @@ field's \texttt{ReaderEvents.OnBlur}\index{ReaderEvents.OnBlur} event.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={JavaScript that sums two values.},label={lis:JavaScript-that-sums},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void Calculate(string outputPath)
 {
-	Document doc = new Document();
+  Document doc = new Document();
     doc.Pages.Add(new Page(PageSize.Letter));
 
     TextField txtFld = new("val_1", 50, 50, 50, 20);
@@ -11390,7 +11374,6 @@ date when a user clicks the button.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A webpage with JavaScript.},label={lis:A-webpage-with},basicstyle={\small\ttfamily},breaklines=true]
-
 <html>
 <script>
 function showDateTime() {
@@ -11416,20 +11399,19 @@ in a \texttt{DocumentJavaScript}\index{DocumentJavaScript} class.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={JavaScript function to validate age.},label={lis:age-JavaScript-function-to},basicstyle={\small\ttfamily},breaklines=true]
-
 function numonly(){
 
-	var age = this.getField("age").value;
+  var age = this.getField("age").value;
 
-	if(isNaN(age)) {
-		app.alert({cMsg:"Only numbers are allowed.", nIcon:1, cTitle:"Not A Number"});
-		this.getField("age").value="";
-	}
+  if(isNaN(age)) {
+    app.alert({cMsg:"Only numbers are allowed.", nIcon:1, cTitle:"Not A Number"});
+    this.getField("age").value="";
+  }
 
-	if(age < 18){
-		app.alert({cMsg:"You must be over 18.", nIcon:1, cTitle:"Must be 18"});
-		this.getField("age").value="";
-	}
+  if(age < 18){
+    app.alert({cMsg:"You must be over 18.", nIcon:1, cTitle:"Must be 18"});
+    this.getField("age").value="";
+  }
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -11444,10 +11426,9 @@ method, \texttt{numonly()}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using document level function.},label={lis:function-Using-document-level},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ValueValidation(string outputPath)
 {
-	Document doc = new();
+    Document doc = new();
     doc.Pages.Add(new Page(PageSize.Letter));
 
     Label lbl = new Label("Age:", 0, 50, 150, 30);
@@ -11464,13 +11445,11 @@ public static void ValueValidation(string outputPath)
     string j7 = "}";
 
     string javascript = j0+ j1 + j5 + j6 + j7;
-
     doc.JavaScripts.Add(new DocumentJavaScript("num_only", javascript));
 
     txtField.ReaderEvents.OnBlur = new JavaScriptAction("numonly();");
     doc.Pages[0].Elements.Add(lbl);
     doc.Pages[0].Elements.Add(txtField);
-
     doc.Draw(outputPath + "javascript-validation-out.pdf");
 }
 \end{lstlisting}
@@ -11517,8 +11496,8 @@ using email and then using HTTP POST.
 \chapter{Submitting Forms}\label{chap:Submitting-Forms}
 \color{black}
 \BgThispage
-
-In the past several chapters, you learned about interactive forms,
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} the past several chapters, you learned about interactive forms,
 handling events with actions, and how to use JavaScript to make your
 PDF documents more interactive. In this chapter, we expand our knowledge
 of all three to learn how to submit data for a completed form. We
@@ -11616,7 +11595,6 @@ property (Figure \ref{fig:Emailing-form-data.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using JavaScript to email a form.},label={lis:email-form-Using-JavaScript-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.PageElements.Forms;
@@ -11643,7 +11621,7 @@ namespace ChapterExamples.Chapters.ChapterEighteen
 
             string bodyMsg = "Thank you for your submission.";
             string javascriptString = "var cEmailURL = \"mailto:user@domain.com,user2@domain.com?subject='Form Submission'&body='" 
-				+ bodyMsg + "'\";";
+        + bodyMsg + "'\";";
             javascriptString += " this.submitForm({ cURL: encodeURI(cEmailURL), cSubmitAs: 'FDF', cCharSet: 'utf-8'});";
 
             Button button = new Button("email", 0, 100, 100, 20);
@@ -11690,7 +11668,6 @@ the email message where the form data is an FDF formatted attachment
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Email attachment formatted as FDF.},label={lis:fdf-Email-response-formatted},basicstyle={\small\ttfamily},breaklines=true,showspaces=true,extendedchars=true]
-
 %FDF-1.2
 %����
 1 0 obj
@@ -11748,7 +11725,6 @@ with the status (Figure \ref{mar:Status-message-in}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={An FDF message displaying success.},label={lis:An-FDF-message},basicstyle={\small\ttfamily},breaklines=true]
-
 %FDF-1.2
 1 0 obj
 <<
@@ -11772,7 +11748,6 @@ to the calling application.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A simple PHP file to return FDF success message.},label={lis:A-simple-PHP},basicstyle={\small\ttfamily},breaklines=true]
-
 <?php
 header('Content-Type: application/vnd.fdf');
 echo "%FDF-1.2
@@ -11887,8 +11862,8 @@ way to view multiple files from within their PDF reader software.
 \chapter{Embedding and Portfolios}\label{chap:Embedding-Files-and}
 \color{black}
 \BgThispage
-
-In this chapter, you learn how to embed files as attachments in a
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter, you learn how to embed files as attachments in a
 PDF document and how to create PDF portfolios. Embedding files allow
 you to send a single PDF document to your end-users with the attached
 files conveniently enclosed within the PDF. Portfolios takes embedding
@@ -11930,7 +11905,6 @@ appearance when opened.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Embedding files as attachments.},label={lis:Embedding-files-as},basicstyle={\small\ttfamily},breaklines=true,showstringspaces=false]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 
@@ -12039,7 +12013,6 @@ When opened, the PDF Portfolio displays the files in tile view (Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a PDF Portfolio.},label={lis:portfolio-Creating-a-PDF-1},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ChapterExamples.Utility;
@@ -12140,8 +12113,8 @@ creating portfolios easy through the classes it provides.
 \chapter{Accessibility}\label{chap:Accessibility}
 \color{black}
 \BgThispage
-
-This chapter examines the PDF/UA (PDF/Universal Accessibility) standard
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{T}{his} chapter examines the PDF/UA (PDF/Universal Accessibility) standard
 and how to ensure compliance. To achieve PDF/UA
 compliance, we explore tagging a PDF document and adding the necessary
 metadata. We ensure all non-text elements have alternative text and
@@ -12236,28 +12209,24 @@ for creating, processing, and interchanging metadata for various applications.
 As you see in the next chapter discussing archiving, the Dublin Core
 is essential for providing metadata describing your document. The
 Dublin Core is a general-purpose metadata vocabulary that describes
-any resource type. Although first developed to define web content,
-it is also widely used with PDF documents.
+any resource. Although first developed to define web content,
+it is also used with PDF documents.
 
 Core Suite provides the \texttt{XmpMetadata}\index{XmpMetadata}, \texttt{PdfUASchema}\index{PdfUASchema},
-and \texttt{DublinCoreSchema}\index{DublinCoreSchema} classes for adding the required schema
-to a PDF document. Listing \ref{lis:Adding-required-schemas} illustrates.
+and \texttt{DublinCoreSchema}\index{DublinCoreSchema} classes for adding a required schema. Listing \ref{lis:Adding-required-schemas} illustrates.
 For brevity, you only add the two necessary properties to the Dublin
-Core schema and exclude other descriptive properties available by
-the schema.
+Core schema and exclude other descriptive properties.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding required schema to a PDF.},label={lis:Adding-required-schemas},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddSchemas(Document doc)
 {
     XmpMetadata xmp = new XmpMetadata();
     PdfUASchema customSchema = new PdfUASchema();
     xmp.AddSchema(customSchema);
-
     DublinCoreSchema dublinCoreSchema = xmp.DublinCore;
     dublinCoreSchema.Title.AddLang("en-us", "XMP");
-    dublinCoreSchema.Title.DefaultText = "My Document Title";
+    dublinCoreSchema.Title.DefaultText = "My Title";
     doc.XmpMetadata = xmp; 
 }
 \end{lstlisting}
@@ -12283,7 +12252,6 @@ learned about fonts in Chapter \ref{sec:Fonts}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Embedding a font in a PDF document.},label={lis:Embedding-a-font},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleFonts(string resourcePath, string outputPath)
 {
     Document doc = new();
@@ -12384,7 +12352,6 @@ Core Suite automatically tags the PDF (Figure \ref{fig:Default-tagging-of}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding TagOptions to a PDF.},label={lis:Adding-TagOptions-to},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF.Xmp;
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
@@ -12433,11 +12400,11 @@ namespace ChapterExamples.Chapters.ChapterTwenty
 
             TextArea txt = new(txt1, 0, doc.Pages[0].Dimensions.TopMargin, pgWdth, pgHeight, Font.TimesBold, 14);
             
-			doc.Pages[0].Elements.Add(img1);
-			doc.Pages[0].Elements.Add(txt);
+      doc.Pages[0].Elements.Add(img1);
+      doc.Pages[0].Elements.Add(txt);
             doc.Pages[0].Elements.Add(lbl);
 
-			AddSchema(doc);
+      AddSchema(doc);
 
             doc.Draw(outputPath + "first-pass-tags-output.pdf");
         }
@@ -12452,7 +12419,7 @@ namespace ChapterExamples.Chapters.ChapterTwenty
             dublinCoreSchema.Title.AddLang("en-us", "XMP");
             dublinCoreSchema.Title.DefaultText = "My Document Title";
             doc.XmpMetadata = xmp;
-		}
+    }
     }
 }
 \end{lstlisting}
@@ -12518,10 +12485,9 @@ PDF document, it passes validation (Figure \ref{mar:Passing-validation.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Fixing Listing \ref{lis:Adding-TagOptions-to}.},label={lis:Fixing-Listing-.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void BasicText(string resourcePath, string outputPath)
  {
-	 Document doc = new();
+     Document doc = new();
      doc.Tag = new TagOptions();
      MetaData(doc);
      doc.Pages.Add(new Page(PageSize.Letter));
@@ -12608,10 +12574,8 @@ page element that uses the font.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Tagging a PDF document.},label={lis:Tagging-a-PDF},basicstyle={\small\ttfamily},breaklines=true,showstringspaces=false]
-
 public static void BasicTextTagged(string resourcePath, string outputPath)
 {
-
     Document doc = new();
     doc.Tag = new TagOptions();
     MetaData(doc);
@@ -12645,13 +12609,11 @@ public static void BasicTextTagged(string resourcePath, string outputPath)
     structArt.Order = 1;
     structArt.Parent = structureDocument;
 
-
     StructureElement structureTitle = new StructureElement(TagType.HeadingLevel1);
     structureTitle.Order = 1;
     structureTitle.Parent = structArt;
     lbl.Tag = structureTitle;
    
-
     StructureElement structureText = new StructureElement(TagType.Paragraph);
     structureText.Order = 2;
     structureText.Parent = structArt;
@@ -12715,7 +12677,6 @@ objects.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding attributes to a document's tags.},label={lis:Adding-attributes-to},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void BasicTextAttributes(string resourcePath, string outputPath)
 {
     Document doc = new();
@@ -12852,7 +12813,6 @@ the instance to the circle's respective \texttt{Tag}\index{Tag} property. Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Providing alternate text to circles on a page.},label={lis:Providing-alternate-text},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void CircleExample(string resourcePath, string outputPath)
 {
     Document doc = new();
@@ -12982,7 +12942,6 @@ illustrates the resulting PDF document and accessibility tags.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Manually tagging a Form.},label={lis:form-Manually-tagging-a},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void Create(string outputPath)
 {
     Document doc = new();
@@ -12998,8 +12957,8 @@ public static void Create(string outputPath)
 
     Label label = new Label("Description:", 0, 0, 75, 0);
     label.Font = theFont;
-	TextField textField = new TextField("description", 75, 0, 200, 200);
-	textField.Font = theFont;
+    TextField textField = new TextField("description", 75, 0, 200, 200);
+    textField.Font = theFont;
     textField.BorderStyle = BorderStyle.Solid;
     textField.ToolTip = "Enter description as text.";
     textField.MultiLine = true;
@@ -13016,8 +12975,6 @@ public static void Create(string outputPath)
     structTxt.Order = 2;
     structTxt.Parent = structureDocument;
     textField.Tag = structTxt;
-
-
 
     Label label2 = new("Favorite Color:", 0, 250, 100, 0);
     label2.Font = theFont;
@@ -13049,7 +13006,7 @@ public static void Create(string outputPath)
     button.Action = new ResetAction();
     button.Label = "Reset";
     button.ToolTip = "Reset button.";
-	button.Font = theFont;
+  button.Font = theFont;
 
     StructureElement structBtn = new StructureElement(TagType.Form);
     structBtn.Order = 5;
@@ -13059,7 +13016,6 @@ public static void Create(string outputPath)
     doc.Pages[0].Elements.Add(button);
     AddSchemas(doc);
     doc.Draw(outputPath + "tagged-simple-form-out.pdf");
-
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -13083,7 +13039,6 @@ the correct order (Figure \ref{fig:PDF-with-template}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Template with default tagging.},label={lis:Template-with-default},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleTemplateRaw(string resourcePath, string outputPath)
 {
     Document doc = new();
@@ -13105,7 +13060,6 @@ public static void SimpleTemplateRaw(string resourcePath, string outputPath)
     lblTitle.TextOutlineColor = RgbColor.Black;
     lblTitle.FontSize = 45;
 
-
     Rectangle rec = new(0, 0, doc.Pages[0].Dimensions.Width, doc.Pages[0].Dimensions.Height);
     rec.FillColor = RgbColor.LightSkyBlue;
     rec.BorderStyle = LineStyle.None;
@@ -13122,7 +13076,6 @@ public static void SimpleTemplateRaw(string resourcePath, string outputPath)
     Image img = new(resourcePath + "/ch3/logo.png", 0, 0, .3F);
     img.AlternateText = "the logo image";
 
-
     Label lblImp = new Label("La Historia Corporativa de Acme", 100, 0, 400, 0);
     lblImp.FontSize = 12;
     lblImp.Font = theFont;
@@ -13130,9 +13083,7 @@ public static void SimpleTemplateRaw(string resourcePath, string outputPath)
     tmp.Elements.Add(img);
     tmp.Elements.Add(lblImp);
 
-
     //create page one of report
-
 
     Circle myCircle2 = new(300, 350, 120f);
     myCircle2.IgnoreMargins = true;
@@ -13142,10 +13093,8 @@ public static void SimpleTemplateRaw(string resourcePath, string outputPath)
 
     doc.Pages[1].Elements.Add(myCircle2);
 
-
     string txt1 = "La Historia Corporativa de Acme";
     TextArea txtA = new(txt1, 0, 325, 512, 600, theFont, 32);
-
 
     doc.Pages[1].Elements.Add(txtA);
 
@@ -13155,14 +13104,13 @@ public static void SimpleTemplateRaw(string resourcePath, string outputPath)
 
     for (int i = 2; i < 5; i++)
     {
-		doc.Pages.Add(new Page(PageSize.Letter));
-
-		TextArea txt = new("This is a test page or text.", 0, 75, 512, 600, theFont, 14);
-		txt.Font = theFont;
-		doc.Pages[i].Elements.Add(txt);
+  doc.Pages.Add(new Page(PageSize.Letter));
+  TextArea txt = new("This is a test page or text.", 0, 75, 512, 600, theFont, 14);
+  txt.Font = theFont;
+  doc.Pages[i].Elements.Add(txt);
     }
 
-	AddSchemas(doc);
+    AddSchemas(doc);
     doc.Draw(outputPath + "simple-template-raw.pdf");
 }
 \end{lstlisting}
@@ -13198,7 +13146,6 @@ artifacts and their subsequent exclusion from tagging (Figure \ref{fig:A-tagged-
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Identifying items as artifacts to avoid tagging.},label={lis:Identifying-items-as},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleTemplateTagged(string resourcePath, string outputPath)
 {
     Document doc = new();
@@ -13208,13 +13155,12 @@ public static void SimpleTemplateTagged(string resourcePath, string outputPath)
     doc.Pages.Add(new Page(PageSize.Letter));
     doc.Pages.Add(new Page(PageSize.Letter));
 
-
     OpenTypeFont theFont = new OpenTypeFont(resourcePath + "/ch20/ARIAL.TTF");
     theFont.Embed = true;
     theFont.Subset = false;
 
     StructureElement structureDocument = new StructureElement(TagType.Document);
-    
+
     StructureElement structPart = new StructureElement(TagType.Part);
     structPart.Order = 1;
     structPart.Parent = structureDocument;
@@ -13225,7 +13171,6 @@ public static void SimpleTemplateTagged(string resourcePath, string outputPath)
 
     Artifact artifact = new Artifact();
     artifact.SetType(ArtifactType.None);
-
 
     Label lblTitle = new("Quarterly Report", 0, 350, 500, 0);
     lblTitle.Font = theFont;
@@ -13254,7 +13199,6 @@ public static void SimpleTemplateTagged(string resourcePath, string outputPath)
     img.AlternateText = "the logo image";
     img.Tag = artifact;
 
-
     Label lblImp = new Label("La Historia Corporativa de Acme",100, 0, 400, 0);
     lblImp.FontSize = 12;
     lblImp.Font = theFont;
@@ -13262,7 +13206,6 @@ public static void SimpleTemplateTagged(string resourcePath, string outputPath)
 
     tmp.Elements.Add(img);
     tmp.Elements.Add(lblImp);
-
 
     StructureElement strPart1 = new StructureElement(TagType.Part);
     strPart1.Order = 2;
@@ -13283,9 +13226,7 @@ public static void SimpleTemplateTagged(string resourcePath, string outputPath)
     myCircle2.FillColor = RgbColor.Tan;
     myCircle2.Tag = artifact;
 
-
     doc.Pages[1].Elements.Add(myCircle2);
-
 
     string txt1 = "La Historia Corporativa de Acme";
     TextArea txtA = new(txt1, 0, 325, 512, 600, theFont, 32);
@@ -13296,31 +13237,27 @@ public static void SimpleTemplateTagged(string resourcePath, string outputPath)
     strTxt1.Parent = strCvrSec1;
     txtA.Tag = strTxt1;
 
-
     doc.Pages[1].Elements.Add(txtA);
 
     doc.Sections.Begin(NumberingStyle.Numeric, tmp);
 
     for (int i = 2; i < 5; i++)
     {
-		doc.Pages.Add(new Page(PageSize.Letter));
-
-		StructureElement strPg = new StructureElement(TagType.Section);
-		strPg.Order = 1;
-		strPg.Parent = strArt;
-
-
-		TextArea txt = new("This is a test page or text.", 0, 75, 512, 600, theFont, 14);
-		doc.Pages[i].Elements.Add(txt);
-
-		StructureElement strTxt = new StructureElement(TagType.Paragraph);
-		strTxt.Order = 2;
-		strTxt.Parent = strPg;
-		txt.Tag = strTxt;
+       doc.Pages.Add(new Page(PageSize.Letter));
+      StructureElement strPg = new StructureElement(TagType.Section);
+      strPg.Order = 1;
+      strPg.Parent = strArt;
+      
+      TextArea txt = new("This is a test page or text.", 0, 75, 512, 600, theFont, 14);
+      doc.Pages[i].Elements.Add(txt);
+      
+      StructureElement strTxt = new StructureElement(TagType.Paragraph);
+      strTxt.Order = 2;
+      strTxt.Parent = strPg;
+      txt.Tag = strTxt;
     }
 
     AddSchemas(doc);
-
     doc.Draw(outputPath + "simple-template-tagged.pdf");
  }
 \end{lstlisting}
@@ -13377,8 +13314,9 @@ of PDF document and how to ensure our documents are PDF/A compliant.
 \chapter{Archiving and PDF/A}\label{chap:Archiving-and-PDF/A}
 \color{black}
 \BgThispage
+\vspace{8.0em}
 \index{Archiving}
-This chapter explores the PDF/A standard, which ensures PDF documents remain accessible and consistently renderable for long-term archiving. Like other forms of electronic information, PDFs require preservation measures to guarantee their readability in the future. The PDF/A (Archiving) specification, an ISO standard, is specifically designed for this purpose. It restricts features that could hinder long-term accessibility, such as external fonts or multimedia content.
+\lettrine[lines=2,lhang=0.1]{T}{his} chapter explores the PDF/A standard, which ensures PDF documents remain accessible and consistently renderable for long-term archiving. Like other forms of electronic information, PDFs require preservation measures to guarantee their readability in the future. The PDF/A (Archiving) specification, an ISO standard, is specifically designed for this purpose. It restricts features that could hinder long-term accessibility, such as external fonts or multimedia content.
 
 Many once-common technologies have faded into obscurity—few developers today remember Adobe Flash or RealNetworks’ early audio streaming codecs. This phenomenon, often called the "digital dark age," refers to the loss of historical data due to obsolete file formats, software, and hardware. As technology evolves, once-accessible digital records may become irretrievable.
 
@@ -13469,7 +13407,6 @@ example using these two classes.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={IccProfile and OutputIntent.},label={lis:IccProfile-and-OutputIntent.},basicstyle={\small\ttfamily},breaklines=true]
-
 IccProfile iccProfile = new IccProfile(resourcePath + "ch21/sRGB2014.icc");
 OutputIntent outputIntents = new OutputIntent("", "IEC 61966-2.1 Default RGB colour space - sRGB 1", "http://www.color.org", "sRGB2014.icc", iccProfile);
 outputIntents.Version = OutputIntentVersion.PDF_A;
@@ -13538,7 +13475,6 @@ PDF document displayed in Adobe Acrobat.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a PDF/A-1a PDF document.},label={lis:Creating-a-PDF/A-1a-1},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using ceTe.DynamicPDF.Text;
@@ -13548,7 +13484,6 @@ namespace ChapterExamples.Chapters.ChapterTwentyOne
 {
     public class SimplePdfAExample
     {
-
         public static void Create(string resourcePath, string outputPath)
         {
             BasicTextTagged(resourcePath, outputPath, "PDF_A_1a_2005");
@@ -13675,7 +13610,6 @@ document with veraPDF, we see that it passes verification (Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a PDF/A-2a compliant PDF document.},label={lis:Creating-a-PDF/A-2a},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AttachSchema(Document doc, string profile, string resourcePath)
 {
     XmpMetadata xmp = new XmpMetadata();
@@ -13740,19 +13674,18 @@ shows that the document is PDF/A-3a compliant (Figure \ref{mar:Passing-PDF/A-3a-
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a PDF/A-3a compliant PDF document.},label={lis:Creating-a-PDF/A-3a},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AttachSchema(Document doc, string profile, string resourcePath)
 {
     XmpMetadata xmp = new XmpMetadata();
     PdfASchema pdfaSchema = null;
 
     if (profile.Equals("PDF_A_1a_2005")){
-		pdfaSchema = new PdfASchema(PdfAStandard.PDF_A_1a_2005);
+    pdfaSchema = new PdfASchema(PdfAStandard.PDF_A_1a_2005);
     } else if (profile.Equals("PdfA2a")){
-		pdfaSchema = new PdfASchema(PdfAStandard.PdfA2a);
-	} else if (profile.Equals("PdfA3a")){
-		pdfaSchema = new PdfASchema(PdfAStandard.PdfA3a);
-		AddAttachments(resourcePath, doc);
+    pdfaSchema = new PdfASchema(PdfAStandard.PdfA2a);
+  } else if (profile.Equals("PdfA3a")){
+    pdfaSchema = new PdfASchema(PdfAStandard.PdfA3a);
+    AddAttachments(resourcePath, doc);
     }
 
     xmp.AddSchema(pdfaSchema);
@@ -13768,7 +13701,6 @@ public static void AttachSchema(Document doc, string profile, string resourcePat
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding attachments to PDF/A-3a compliant PDF Document.},label={lis:Adding-attachments-to},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddAttachments(string resourcePath, Document doc)
 {
     string fileOne = resourcePath + "/ch2/egypt.jpg";
@@ -13816,13 +13748,14 @@ These requirements ensure that a PDF/A document is retrievable and
 will display correctly in the future. Core Suite simplifies making
 your PDF/A documents compliant and ensures your organization meets archive requirements.
 
-\part{Modifying PDF Documents}\label{part:modifying-pdf-doc}
+\DPpart{Modifying PDF Documents}{part:modifying-pdf-doc}
 
 \color{white}
 \chapter{Merging}\label{chap:Merging}
 \color{black}
 \BgThispage
-In this chapter you learn how to merge PDF documents to create a new
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter you learn how to merge PDF documents to create a new
 combined document. You also learn how to modify existing PDF documents.
 We start by examining how to merge PDF documents and then move on
 to appending PDF documents and adding new pages to a PDF document.
@@ -13957,11 +13890,10 @@ the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging two documents.},label={lis:Merging-two-documents.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleMerge(string resourcePath, string outputPath)
 {
-	MergeDocument mergedDoc = MergeDocument.Merge(resourcePath + "doc1.pdf", resourcePath + "doc2.pdf");
-	mergedDoc.Draw(outputPath + "simple-merge-out.pdf");
+  MergeDocument mergedDoc = MergeDocument.Merge(resourcePath + "doc1.pdf", resourcePath + "doc2.pdf");
+  mergedDoc.Draw(outputPath + "simple-merge-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -13972,13 +13904,12 @@ passed \texttt{PdfDocument}\index{PdfDocument} instances (Listing \ref{lis:2Merg
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging two documents.},label={lis:2Merging-two-documents.-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleMerge(string resPath, string outputPath)
 {
-	PdfDocument doc1 = new PdfDocument(resPath + "doc1.pdf");
-	PdfDocument doc2 = new PdfDocument(resPath + "doc2.pdf");
-	MergeDocument mergedDoc = MergeDocument.Merge(doc1,doc2);
-	mergedDoc.Draw(outputPath + "simple-merge-out.pdf");
+  PdfDocument doc1 = new PdfDocument(resPath + "doc1.pdf");
+  PdfDocument doc2 = new PdfDocument(resPath + "doc2.pdf");
+  MergeDocument mergedDoc = MergeDocument.Merge(doc1,doc2);
+  mergedDoc.Draw(outputPath + "simple-merge-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14001,12 +13932,11 @@ PDF.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Appending a document.},label={lis:Appending-a-document.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleAppend(string resourcePath, string outputPath)
 {
-	MergeDocument mergedDoc = MergeDocument.Merge(resourcePath + "doc1.pdf", resourcePath + "doc2.pdf");
-	mergedDoc.Append(resourcePath + "doc3.pdf");
-	mergedDoc.Draw(outputPath + "append-merge-out.pdf");
+  MergeDocument mergedDoc = MergeDocument.Merge(resourcePath + "doc1.pdf", resourcePath + "doc2.pdf");
+  mergedDoc.Append(resourcePath + "doc3.pdf");
+  mergedDoc.Draw(outputPath + "append-merge-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14020,13 +13950,12 @@ append two documents to the \texttt{MergeDocument}\index{MergeDocument} instance
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Appending two documents.},label={lis:Appending-two-documents.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleAppendTwo(string resourcePath, string outputPath)
 {
-	MergeDocument mergedDoc = new(resourcePath + "doc1.pdf");
-	mergedDoc.Append(resourcePath + "doc2.pdf");
-	mergedDoc.Append(resourcePath + "doc3.pdf");
-	mergedDoc.Draw(outputPath + "append-merge-two-out.pdf");
+  MergeDocument mergedDoc = new(resourcePath + "doc1.pdf");
+  mergedDoc.Append(resourcePath + "doc2.pdf");
+  mergedDoc.Append(resourcePath + "doc3.pdf");
+  mergedDoc.Draw(outputPath + "append-merge-two-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14057,13 +13986,12 @@ combined PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Extracting pages.},label={lis:Extracting-pages.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleAppendTwoPages(string resPath, string outPath)
 {
-	MergeDocument mergedDoc = new(resPath + "doc1.pdf", 1,3);
-	mergedDoc.Append(resPath + "doc2.pdf", 3, 1);
-	mergedDoc.Append(resPath + "doc3.pdf", 2,1);
-	mergedDoc.Draw(outPath + "append-merge-pages-two-out.pdf");
+  MergeDocument mergedDoc = new(resPath + "doc1.pdf", 1,3);
+  mergedDoc.Append(resPath + "doc2.pdf", 3, 1);
+  mergedDoc.Append(resPath + "doc3.pdf", 2,1);
+  mergedDoc.Draw(outPath + "append-merge-pages-two-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14086,14 +14014,13 @@ instances to merge and append the PDF documents.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging three PDF documents.},label={lis:Merging-three-PDF},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleAppendPages(string resourcePath, string outputPath)
 {
-	PdfDocument pdfDoc1 = new(resourcePath + "doc1.pdf");
-	PdfDocument pdfDoc2 = new(resourcePath + "doc2.pdf");
-	MergeDocument mergedDoc = MergeDocument.Merge(pdfDoc1, pdfDoc2);
-	mergedDoc.Append(resourcePath + "doc3.pdf", 1, 2);
-	mergedDoc.Draw(outputPath + "append-pages-merge-out.pdf");
+  PdfDocument pdfDoc1 = new(resourcePath + "doc1.pdf");
+  PdfDocument pdfDoc2 = new(resourcePath + "doc2.pdf");
+  MergeDocument mergedDoc = MergeDocument.Merge(pdfDoc1, pdfDoc2);
+  mergedDoc.Append(resourcePath + "doc3.pdf", 1, 2);
+  mergedDoc.Draw(outputPath + "append-pages-merge-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14131,7 +14058,6 @@ illustrates the resulting PDF.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a page to a PDF.},label={lis:Adding-a-page},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddMultiplePage(string resourcePath, string outputPath)
 {
     MergeDocument mergedDoc = new();
@@ -14187,7 +14113,6 @@ PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding an existing page.},label={lis:Adding-an-existing},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddSingleImportedPage(string resPath, string outPath)
 {
     MergeDocument mergedDoc = new();
@@ -14205,9 +14130,8 @@ public static void AddSingleImportedPage(string resPath, string outPath)
     MergeOptions mergeOptions = new();
     mergeOptions.PageLabelsAndSections = false;
     mergeOptions.Outlines = false;
-
     mergedDoc.Append(resPath + "doc1.pdf", mergeOptions);
-    mergedDoc.Draw(outPath + "merge-single-page-importedpage-out.pdf");
+    mergedDoc.Draw(outPath + "merge-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14232,7 +14156,6 @@ the desired pages (Figure \ref{fig:Splitting-a-PDF}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Splitting a PDF.},label={lis:Splitting-a-PDF.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF.Merger;
 
 namespace ChapterExamples.Chapters.ChapterTwentyTwo
@@ -14311,15 +14234,14 @@ and sectioning should be removed.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging options.},label={lis:Merging-options.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void MergeOptionsExample(string resourcePath, string outputPath)
 {
-	MergeOptions mergeOptions = new();
-	mergeOptions.PageLabelsAndSections = false;
-	mergeOptions.Outlines = false;
-	MergeDocument mergedDoc = MergeDocument.Merge(resourcePath + "doc1.pdf", mergeOptions, resourcePath + "doc2.pdf", mergeOptions);
-	mergedDoc.Append(resourcePath + "doc3.pdf", mergeOptions);
-	mergedDoc.Draw(outputPath + "merge-options-merge-out.pdf");
+  MergeOptions mergeOptions = new();
+  mergeOptions.PageLabelsAndSections = false;
+  mergeOptions.Outlines = false;
+  MergeDocument mergedDoc = MergeDocument.Merge(resourcePath + "doc1.pdf", mergeOptions, resourcePath + "doc2.pdf", mergeOptions);
+  mergedDoc.Append(resourcePath + "doc3.pdf", mergeOptions);
+  mergedDoc.Draw(outputPath + "merge-options-merge-out.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14361,7 +14283,6 @@ attachment, and sections, as the header label illustrates (Figure
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using static merge options.},label={lis:Using-static-merge},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void MergeOptionsStaticExample(string resPath, string outPath)
 {
     MergeDocument mergedDoc = MergeDocument.Merge(resPath + "doc1.pdf", MergeOptions.None, resPath + "doc2.pdf", MergeOptions.None);
@@ -14394,7 +14315,6 @@ This is apparent because the label on the third page is placed at
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Modifying dimensions of imported page.},label={lis:Modifying-dimensions-of},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.Merger;
 using ceTe.DynamicPDF.PageElements;
@@ -14436,7 +14356,6 @@ namespace ChapterExamples.Chapters.ChapterTwentyTwo
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Importing two pages.},label={lis:Importing-two-pages.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ImportMultiplePages(string resPath, string outPath)
 {
     MergeDocument mergedDoc = new();
@@ -14477,7 +14396,6 @@ illustrates the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Importing page data.},label={lis:Importing-page-data.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddImportPageData(string resourcePath, string outputPath)
 {
     MergeDocument mergedDoc = new();
@@ -14530,7 +14448,6 @@ PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Clipping imported page.},label={lis:Clipping-imported-page.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddAndClipImportedPage(string resourcePath, string outputPath)
 {
     MergeDocument mergedDoc = new();
@@ -14584,7 +14501,6 @@ instead of ten instances of a page's content, you only have one. Figure
 \ref{mar:Reusing-ImportedPageArea} illustrates the results.
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Reusing ImportedPageArea.},label={lis:Reusing-ImportedPageArea.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ImportedPageContentsExample(string resPath, string outPath)
 {
     MergeDocument mergedDoc = new();
@@ -14592,10 +14508,10 @@ public static void ImportedPageContentsExample(string resPath, string outPath)
     impPgArea.SetBounds(100, 100);
     ImportedPageContents impPgContents = impPgArea.Contents;
     Page pg = new Page(PageSize.Legal, PageOrientation.Landscape);
-	for (int i = 0; i < 10; i++){
-	 ImportedPageArea area = new ImportedPageArea(importedPageContents, i * 50, i * 50);
-	 area.SetBounds(100, 100);
-	 page.Elements.Add(area);
+  for (int i = 0; i < 10; i++){
+   ImportedPageArea area = new ImportedPageArea(importedPageContents, i * 50, i * 50);
+   area.SetBounds(100, 100);
+   page.Elements.Add(area);
     }
 
     mergedDoc.Pages.Add(pg);
@@ -14639,18 +14555,19 @@ Figure \ref{fig:Adding-content-to} is the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding content to an imported page.},label={lis:Adding-content-to},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddingContent(string resourcePath, string outputPath)
 {
     MergeDocument mergedDoc = new MergeDocument();
     ImportedPage page = new ImportedPage(resourcePath + "doc1.pdf", 1);
     page.Elements.Add(new Image(resourcePath + "../ch2/egypt.jpg", 100, 175, .5f));
+   
     Label lbl = new Label("Label Text", 50, 75, 200, 12);
     lbl.FontSize = 72;
     lbl.TextColor = RgbColor.White;
     lbl.TextOutlineColor = RgbColor.Red;
     lbl.TextOutlineWidth = 3;
     page.Elements.Add(lbl);
+   
     Rectangle rec = new Rectangle(10, 50, 250, 500, RgbColor.Black, RgbColor.DarkRed);
     page.BackgroundElements.Add(rec);
     mergedDoc.Pages.Add(page);
@@ -14718,7 +14635,6 @@ the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding a Page.},label={lis:extract-Adding-a-Page.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddNewPageAndImage(string resourcePath, string outputPath)
 {
     Page page = new Page(PageSize.Letter);
@@ -14764,7 +14680,6 @@ instance. Figure \ref{mar:Adding-image-to} is the resulting PDF document.
 \end{marginfigure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Extracting image and adding to existing page.},label={lis:Extracting-image-and},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddToExistingPageAndImage(string resourcePath, string outputPath)
 {   
     MergeOptions mergeOptions = new();
@@ -14782,7 +14697,7 @@ public static void AddToExistingPageAndImage(string resourcePath, string outputP
     lbl.TextOutlineColor = RgbColor.Black;
     lbl.TextOutlineWidth = 1;
     mergedDoc.Pages[0].Elements.Add(image);
-	mergedDoc.Pages[0].Elements.Add(lbl);
+  mergedDoc.Pages[0].Elements.Add(lbl);
     mergedDoc.Draw(outputPath + "merge-addImage-existing-page-out.pdf");
 }
 \end{lstlisting}
@@ -14810,7 +14725,6 @@ the page's header and footer, from the original document (Figure \ref{fig:Docume
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Extracting document's text.},label={lis:Extracting-document's-text.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ExtractTextMergeDocument(string resourcePath, string outputPath)
 {
     MergeDocument doc = new();
@@ -14838,7 +14752,6 @@ Y, Width, Height)}). Listing \ref{lis:Extracting-text-from} illustrates.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Extracting text from area of a document.},label={lis:Extracting-text-from},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ExtractTextAreaMergeDocument(string resourcePath, string outputPath)
 {
     MergeDocument doc = new();
@@ -14887,8 +14800,8 @@ documents using DynamicPDF Core Suite for .NET.
 \chapter{Modifying Outlines}\label{chap:Modifying-Outlines}
 \color{black}
 \BgThispage
-
-In this chapter, you learn how to modify an existing PDF document's
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter, you learn how to modify an existing PDF document's
 outline. You first learn how to add an outline to an existing outline.
 You then replace an existing outline with a new outline. After adding
 and replacing an outline, we examine the \texttt{PdfOutline} and \texttt{PdfOutlineList}
@@ -14934,11 +14847,10 @@ two outlines are then merged together (Figure \ref{mar:Merging-two-outlines.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging two outlines.},label={lis:Merging-two-outlines.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleMerge(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = MergeDocument.Merge(resourcePath + "doc1b.pdf", MergeOptions.All, resourcePath + "doc2b.pdf", MergeOptions.All);
-	mergeDoc.Draw(outputPath + "simple-merge-outline-one-output.pdf");
+  MergeDocument mergeDoc = MergeDocument.Merge(resourcePath + "doc1b.pdf", MergeOptions.All, resourcePath + "doc2b.pdf", MergeOptions.All);
+  mergeDoc.Draw(outputPath + "simple-merge-outline-one-output.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -14993,19 +14905,18 @@ in the PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding to an outline.},label={lis:Adding-to-an},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddOutline(string resourcePath, string outputPath)
 {
-	PdfDocument doc = new(resourcePath + "doc1.pdf");
+  PdfDocument doc = new(resourcePath + "doc1.pdf");
     MergeDocument mergeDoc = new MergeDocument(doc, MergeOptions.All);
     mergeDoc.Append(resourcePath + "doc2.pdf", MergeOptions.None);
     Outline outline = mergeDoc.Outlines.Add("Doc2 Outline");
     int pg = doc.Pages.Count + 1;
 
     for (int i = pg; i <= mergeDoc.Pages.Count; i++){
-		Outline outln = outln.ChildOutlines.Add("Doc2 pg " +  i, new XYDestination(i, 0, 0));
+    Outline outln = outln.ChildOutlines.Add("Doc2 pg " +  i, new XYDestination(i, 0, 0));
     }
-	mergeDoc.Draw(outputPath + "add-to-outline-one-output.pdf");
+  mergeDoc.Draw(outputPath + "add-to-outline-one-output.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15063,7 +14974,6 @@ illustrates the resulting outline.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Manually merging two outlines.},label={lis:Manually-merging-two},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleManualMerge(string resourcePath, string outputPath)
 {
     MergeDocument mergeDoc = MergeDocument.Merge(resourcePath + "doc1b.pdf", MergeOptions.None, resourcePath + "doc2b.pdf", MergeOptions.None);
@@ -15078,7 +14988,7 @@ public static void SimpleManualMerge(string resourcePath, string outputPath)
     for (int i = 0; i < doc1List[0].ChildOutlines.Count; i++){
         BuildOutline(doc1List[0].ChildOutlines[i], doc1Root);
     }
-	mergeDoc.Outlines.Add(doc2.Outlines[0], true);
+  mergeDoc.Outlines.Add(doc2.Outlines[0], true);
     mergeDoc.Draw(outputPath + "simple-manual-merge-outline-one-output.pdf");
 }
 
@@ -15104,7 +15014,6 @@ to reinforce that the code is designed to illustrate using \texttt{PdfOutline}\i
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Simple manually merging.},label={lis:Simple-manually-merging.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleEasyManualMerge(string resourcePath, string outputPath)
 {
     MergeDocument mergeDoc = MergeDocument.Merge(resourcePath + "doc1b.pdf", MergeOptions.None, resourcePath + "doc2b.pdf", MergeOptions.None);
@@ -15164,7 +15073,6 @@ where each outline element bookmarks the appropriate page.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging two outlines.},label={lis:Merging-two-outlines.-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void SimpleManualRevistMerge(string resourcePath, string outputPath)
 {
     MergeDocument mergeDoc = MergeDocument.Merge(resourcePath + "doc1b.pdf", MergeOptions.None, resourcePath + "doc2b.pdf", MergeOptions.None);
@@ -15209,7 +15117,6 @@ effectively replacing the outline.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Replacing an outline.},label={lis:Replacing-an-outline.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ReplaceOutline(string resourcePath, string outputPath)
 {
     MergeDocument mergeDoc = new MergeDocument(resourcePath + "doc1.pdf", MergeOptions.None);
@@ -15217,9 +15124,9 @@ public static void ReplaceOutline(string resourcePath, string outputPath)
     
     for (int i = 1; i <= mergeDoc.Pages.Count; i++)
     {
-		Outline outline1 = outline.ChildOutlines.Add("Page " + i, new XYDestination(i, 0, 0));
+    Outline outline1 = outline.ChildOutlines.Add("Page " + i, new XYDestination(i, 0, 0));
     }
-	mergeDoc.Draw(outputPath + "replaced-outline-output.pdf");
+  mergeDoc.Draw(outputPath + "replaced-outline-output.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15295,25 +15202,24 @@ the combined outline.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Changing outline captions and inserting.},label={lis:Changing-outline-captions},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ModifyOutlineInsert(string resourcePath, string outputPath)
 {
-	PdfDocument doc2 = new(resourcePath + "doc2.pdf");
-	PdfDocument doc1 = new(resourcePath + "doc1.pdf");
-	PdfOutlineList pdfOut = doc1.Outlines;
+  PdfDocument doc2 = new(resourcePath + "doc2.pdf");
+  PdfDocument doc1 = new(resourcePath + "doc1.pdf");
+  PdfOutlineList pdfOut = doc1.Outlines;
 
-	MergeDocument mergeDoc = new();
-	mergeDoc.Append(doc2, MergeOptions.None);
-	mergeDoc.Append(doc1, MergeOptions.None);
-	Outline root = mergeDoc.Outlines.Add(pdfOut[0].Text);
-	root.ChildOutlines.Add("DynamicPDF API Site", new UrlAction("https://dpdf.io/"));
+  MergeDocument mergeDoc = new();
+  mergeDoc.Append(doc2, MergeOptions.None);
+  mergeDoc.Append(doc1, MergeOptions.None);
+  Outline root = mergeDoc.Outlines.Add(pdfOut[0].Text);
+  root.ChildOutlines.Add("DynamicPDF API Site", new UrlAction("https://dpdf.io/"));
 
-	for(int i = 1; i <= doc2.Pages.Count; i++){
-	      root.ChildOutlines.Add("Pg" + i, new XYDestination(i, 0, 0));
-	}
-	PdfOutlineList pdfOutKids = pdfOut[0].ChildOutlines;
-	for(int i = 1; i <= pdfOutKids.Count; i++){
-	   root.ChildOutlines.Add(pdfOutKids[i-1], true);
+  for(int i = 1; i <= doc2.Pages.Count; i++){
+        root.ChildOutlines.Add("Pg" + i, new XYDestination(i, 0, 0));
+  }
+  PdfOutlineList pdfOutKids = pdfOut[0].ChildOutlines;
+  for(int i = 1; i <= pdfOutKids.Count; i++){
+     root.ChildOutlines.Add(pdfOutKids[i-1], true);
        if (pdfOutKids[i-1].ChildOutlines.Count == 0)
           root.ChildOutlines[i+doc2.Pages.Count].Text = "Pg" + (i + doc2.Pages.Count);
       }
@@ -15348,7 +15254,6 @@ illustrates the resulting PDF document.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding bookmarks to existing PDF.},label={lis:Adding-bookmarks-to},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddBookmarkExistingPage(string resourcePath, string outPath)
 {
     MergeDocument mergeDoc = new();
@@ -15390,8 +15295,8 @@ form fields.
 \chapter{Modifying Forms}\label{chap:Modifying-Forms}
 \color{black}
 \BgThispage
-
-In Chapter \ref{chap:Interactive-Forms}, you learned how to create forms. In subsequent chapters you also learned how to create forms that allow end users to pre-fill,
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} Chapter \ref{chap:Interactive-Forms}, you learned how to create forms. In subsequent chapters you also learned how to create forms that allow end users to pre-fill,
 submit, or email forms. This chapter examines how you can modify existing
 forms using DynamicPDF Core Suite for .NET. You first learn how
 to complete a form programmatically. You then learn how to modify
@@ -15484,18 +15389,17 @@ is returned. You can then access the properties of either class instance
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Reading a form field's properties.},label={lis:Reading-a-form},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ReadingAField(string resourcePath, string outputPath)
 {
-	PdfDocument pdfDoc = new(resourcePath + "completed_form.pdf");
-	MergeDocument mergeDoc = new(resourcePath + "completed_form.pdf");
-	PdfFormField pdfFormField = pdfDoc.Form.Fields["description"];
-	FormField mergeDocFormField = mergeDoc.Form.Fields["description"];
-	string val = pdfFormField.GetValue() + " | " + mergeDocFormField.Value;
-	string val2 = "\n" + pdfFormField.FontSize + " | " + 	mergeDocFormField.FontSize;
-	string val3 = "\n " + pdfFormField.GetType().ToString() + " | " + 	mergeDocFormField.GetType().ToString();
-	string val4 = "\n" + pdfFormField.ToString() + " | " + 	mergeDocFormField.ToString();
-	Console.WriteLine(val + val2 + val3 + val4);
+  PdfDocument pdfDoc = new(resourcePath + "completed_form.pdf");
+  MergeDocument mergeDoc = new(resourcePath + "completed_form.pdf");
+  PdfFormField pdfFormField = pdfDoc.Form.Fields["description"];
+  FormField mergeDocFormField = mergeDoc.Form.Fields["description"];
+  string val = pdfFormField.GetValue() + " | " + mergeDocFormField.Value;
+  string val2 = "\n" + pdfFormField.FontSize + " | " +   mergeDocFormField.FontSize;
+  string val3 = "\n " + pdfFormField.GetType().ToString() + " | " +   mergeDocFormField.GetType().ToString();
+  string val4 = "\n" + pdfFormField.ToString() + " | " +   mergeDocFormField.ToString();
+  Console.WriteLine(val + val2 + val3 + val4);
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15525,7 +15429,6 @@ values.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Reading form field values.},label={lis:Reading-form-field},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF.Merger;
 using ceTe.DynamicPDF.PageElements;
 
@@ -15586,22 +15489,21 @@ the values to the console (Figure \ref{mar:Reading-two-forms.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Reading two forms.},label={lis:Reading-two-forms.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ReadingTwoForms(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new(resourcePath + "simpleform1_completed.pdf", new MergeOptions(true, "form1"));
-	MergeOptions options = new();
+  MergeDocument mergeDoc = new(resourcePath + "simpleform1_completed.pdf", new MergeOptions(true, "form1"));
+  MergeOptions options = new();
     options.FormFields = true;
     options.RootFormField = "form2";
-	mergeDoc.Append(resourcePath + "simpleform2_completed.pdf", options);
+  mergeDoc.Append(resourcePath + "simpleform2_completed.pdf", options);
 
-	string val1 = mergeDoc.Form.Fields["form1.first_name"].Value;
-	string val2 = mergeDoc.Form.Fields["form1.last_name"].Value;
-	string val3 = mergeDoc.Form.Fields["form1.description"].Value;
-	string val4 = mergeDoc.Form.Fields["form2.full_name"].Value;
-	string val5 = mergeDoc.Form.Fields["form2.description"].Value;
+  string val1 = mergeDoc.Form.Fields["form1.first_name"].Value;
+  string val2 = mergeDoc.Form.Fields["form1.last_name"].Value;
+  string val3 = mergeDoc.Form.Fields["form1.description"].Value;
+  string val4 = mergeDoc.Form.Fields["form2.full_name"].Value;
+  string val5 = mergeDoc.Form.Fields["form2.description"].Value;
 
-	Console.WriteLine(val1 + " " + val2 + " " + val3 + " " + val4 + " " + val5);
+  Console.WriteLine(val1 + " " + val2 + " " + val3 + " " + val4 + " " + val5);
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15636,7 +15538,6 @@ illustrates the completed form.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Completing a form.},label={lis:Completing-a-form.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF.Forms;
 using ceTe.DynamicPDF.Merger;
 
@@ -15686,18 +15587,17 @@ completed form as a new PDF document (Figure \ref{fig:Completing-multiple-forms.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Completing multiple forms.},label={lis:Filling-Multiple-forms.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void CompletingTwoForms(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new(resourcePath + "simpleform1.pdf", new MergeOptions(true, "form1"));
-	MergeOptions options = new(true, "form2");
-	mergeDoc.Append(resourcePath + "simpleform2.pdf", options);
+  MergeDocument mergeDoc = new(resourcePath + "simpleform1.pdf", new MergeOptions(true, "form1"));
+  MergeOptions options = new(true, "form2");
+  mergeDoc.Append(resourcePath + "simpleform2.pdf", options);
     mergeDoc.Form.Fields["form1.first_name"].Value = "John";
-	mergeDoc.Form.Fields["form1.last_name"].Value = "Doe";
-	mergeDoc.Form.Fields["form1.description"].Value = "Favorite food is pizza.";
-	mergeDoc.Form.Fields["form2.full_name"].Value = "John Doe";
-	mergeDoc.Form.Fields["form2.description"].Value = "Too much pepper on pizza.";
-	mergeDoc.Draw(outputPath + "readvalues_combined_form.pdf");
+  mergeDoc.Form.Fields["form1.last_name"].Value = "Doe";
+  mergeDoc.Form.Fields["form1.description"].Value = "Favorite food is pizza.";
+  mergeDoc.Form.Fields["form2.full_name"].Value = "John Doe";
+  mergeDoc.Form.Fields["form2.description"].Value = "Too much pepper on pizza.";
+  mergeDoc.Draw(outputPath + "readvalues_combined_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15722,7 +15622,6 @@ namespace ChapterExamples.Chapters.ChapterTwentyFour
         public static void Modify(string resourcePath, string outputPath)
         {
             ReadOnly(resourcePath, outputPath);
-          
         }
 
         public static void ReadOnly(string resourcePath, string outputPath)
@@ -15734,10 +15633,8 @@ namespace ChapterExamples.Chapters.ChapterTwentyFour
             security.AllowUpdateAnnotsAndFields = false;
             security.AllowEdit = false;
             mergeDoc.Security = security;
-
             mergeDoc.Draw(outputPath + "read-only-completed_form.pdf");
         }
-
     }
 }
 
@@ -15805,7 +15702,6 @@ as a new PDF document (Figure \ref{mar:Obtaining-field-locations.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Obtaining field locations.},label={lis:Obtaining-field-locations.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF.Merger;
 using ceTe.DynamicPDF.PageElements;
 
@@ -15857,18 +15753,17 @@ to see an easier way to replace a field with a page element.}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Removing a form field.},label={lis:Removing-a-form},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void RemoveField(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	PdfDocument pdfDoc = new(resourcePath + "form.pdf");
-	float x = pdfDoc.Form.Fields["completed_book"].GetX(mergeDoc.Pages[0]);
-	float y = pdfDoc.Form.Fields["completed_book"].GetY(mergeDoc.Pages[0]);
-	mergeDoc.Form.Fields["completed_book"].Output = FormFieldOutput.Remove;
-	Label lbl = new("Redacted", x, y, 75, 0);
-	lbl.Font = Font.HelveticaOblique;
-	mergeDoc.Pages[0].Elements.Add(lbl);
-	mergeDoc.Draw(outputPath + "removefield_form.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  PdfDocument pdfDoc = new(resourcePath + "form.pdf");
+  float x = pdfDoc.Form.Fields["completed_book"].GetX(mergeDoc.Pages[0]);
+  float y = pdfDoc.Form.Fields["completed_book"].GetY(mergeDoc.Pages[0]);
+  mergeDoc.Form.Fields["completed_book"].Output = FormFieldOutput.Remove;
+  Label lbl = new("Redacted", x, y, 75, 0);
+  lbl.Font = Font.HelveticaOblique;
+  mergeDoc.Pages[0].Elements.Add(lbl);
+  mergeDoc.Draw(outputPath + "removefield_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15886,12 +15781,11 @@ removed (Figure \ref{fig:Removing-all-form}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Removing all form fields.},label={lis:Removing-all-form},basicstyle={\small\ttfamily},breaklines=true]]
-
 public static void RemoveAllFields(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	mergeDoc.Form.Output = FormOutput.Remove;
-	mergeDoc.Draw(outputPath + "allfields_removed_form.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  mergeDoc.Form.Output = FormOutput.Remove;
+  mergeDoc.Draw(outputPath + "allfields_removed_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15913,23 +15807,22 @@ and a \texttt{ListBox}\index{ListBox} to the form (Figure \ref{fig:Adding-new-fi
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Adding new fields.},label={lis:Adding-new-fields.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void AddField(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	PdfDocument pdfDoc = new(resourcePath + "form.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  PdfDocument pdfDoc = new(resourcePath + "form.pdf");
 
-	float x = pdfDoc.Form.Fields["completed_book"].GetX(mergeDoc.Pages[0]);
-	float y = pdfDoc.Form.Fields["completed_book"].GetY(mergeDoc.Pages[0]);
-	Label lbl = new("Time to Complete", x + 175, y, 150,0);
-	ListBox listBox = new ListBox("completion_time", x+300, y, 100, 100);
-	listBox.Items.Add("short");
-	listBox.Items.Add("moderate", true);
-	listBox.Items.Add("long");
-	listBox.Items.Add("very long");
-	mergeDoc.Pages[0].Elements.Add(lbl);
-	mergeDoc.Pages[0].Elements.Add(listBox);
-	mergeDoc.Draw(outputPath + "addfield_form.pdf");
+  float x = pdfDoc.Form.Fields["completed_book"].GetX(mergeDoc.Pages[0]);
+  float y = pdfDoc.Form.Fields["completed_book"].GetY(mergeDoc.Pages[0]);
+  Label lbl = new("Time to Complete", x + 175, y, 150,0);
+  ListBox listBox = new ListBox("completion_time", x+300, y, 100, 100);
+  listBox.Items.Add("short");
+  listBox.Items.Add("moderate", true);
+  listBox.Items.Add("long");
+  listBox.Items.Add("very long");
+  mergeDoc.Pages[0].Elements.Add(lbl);
+  mergeDoc.Pages[0].Elements.Add(listBox);
+  mergeDoc.Draw(outputPath + "addfield_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -15959,17 +15852,16 @@ namespace.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Replacing form fields.},label={lis:Replacing-form-fields.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ReplaceField(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	PdfDocument pdfDoc = new(resourcePath + "form.pdf");
-	float x = pdfDoc.Form.Fields["completed_book"].GetX(mergeDoc.Pages[0]);
-	float y = pdfDoc.Form.Fields["completed_book"].GetY(mergeDoc.Pages[0]);
-	mergeDoc.Form.Fields["completed_book"].Output = FormFieldOutput.Remove;
-	TextField txtField = new 	ceTe.DynamicPDF.PageElements.Forms.TextField("completed_book", x, y, 200, 20);
-	mergeDoc.Pages[0].Elements.Add(txtField);
-	mergeDoc.Draw(outputPath + "replaced_form.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  PdfDocument pdfDoc = new(resourcePath + "form.pdf");
+  float x = pdfDoc.Form.Fields["completed_book"].GetX(mergeDoc.Pages[0]);
+  float y = pdfDoc.Form.Fields["completed_book"].GetY(mergeDoc.Pages[0]);
+  mergeDoc.Form.Fields["completed_book"].Output = FormFieldOutput.Remove;
+  TextField txtField = new   ceTe.DynamicPDF.PageElements.Forms.TextField("completed_book", x, y, 200, 20);
+  mergeDoc.Pages[0].Elements.Add(txtField);
+  mergeDoc.Draw(outputPath + "replaced_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -16003,20 +15895,19 @@ instance's dimensions.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Replacing form fields.},label={lis:Replacing-form-fields.-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void ReplaceTwoFields(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	PdfDocument pdfDoc = new(resourcePath + "form.pdf");
-            	pdfDoc.Form.Fields["completed_book"].CreateLabel(mergeDoc.Pages[0], "NA", Font.HelveticaOblique, 12);
-	mergeDoc.Form.Fields["completed_book"].Output = FormFieldOutput.Remove;
-	Rectangle rect = new Rectangle(0, 0, 200, 200);
-	rect.FillColor = RgbColor.Orange;
-	rect.BorderColor = RgbColor.Navy;
-	mergeDoc.Pages[0].Elements.Add(rect);
-	pdfDoc.Form.Fields["description"].PositionPageElement(rect, 	mergeDoc.Pages[0]);
-	mergeDoc.Form.Fields["description"].Output = FormFieldOutput.Remove;
-	mergeDoc.Draw(outputPath + "replaced_form_pdfform.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  PdfDocument pdfDoc = new(resourcePath + "form.pdf");
+  pdfDoc.Form.Fields["completed_book"].CreateLabel(mergeDoc.Pages[0], "NA", Font.HelveticaOblique, 12);
+  mergeDoc.Form.Fields["completed_book"].Output = FormFieldOutput.Remove;
+  Rectangle rect = new Rectangle(0, 0, 200, 200);
+  rect.FillColor = RgbColor.Orange;
+  rect.BorderColor = RgbColor.Navy;
+  mergeDoc.Pages[0].Elements.Add(rect);
+  pdfDoc.Form.Fields["description"].PositionPageElement(rect,   mergeDoc.Pages[0]);
+  mergeDoc.Form.Fields["description"].Output = FormFieldOutput.Remove;
+  mergeDoc.Draw(outputPath + "replaced_form_pdfform.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -16049,14 +15940,13 @@ the form's name to the relevant form fields (Figure \ref{fig:Merging-two-forms.}
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Merging two forms.},label={lis:Merging-two-forms.},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void MergeTwoForms(string resourcePath, string outputPath)
 {
-	MergeOptions options1 = new MergeOptions(true, "form1");
-	MergeOptions options2 = new MergeOptions(true, "form2");
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "simpleform1.pdf", options1);
-	mergeDoc.Append(resourcePath + "simpleform2.pdf", options2);
-	mergeDoc.Draw(outputPath + "merged_form.pdf");
+  MergeOptions options1 = new MergeOptions(true, "form1");
+  MergeOptions options2 = new MergeOptions(true, "form2");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "simpleform1.pdf", options1);
+  mergeDoc.Append(resourcePath + "simpleform2.pdf", options2);
+  mergeDoc.Draw(outputPath + "merged_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -16088,12 +15978,11 @@ a \texttt{MergeDocument}\index{MergeDocument} instance and then specify that the
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Flattening a form.},label={lis:Flattening-and-removing},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void FlattenAllField(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	mergeDoc.Form.Output = FormOutput.Flatten;
-	mergeDoc.Draw(outputPath + "allfields_flattened_form.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  mergeDoc.Form.Output = FormOutput.Flatten;
+  mergeDoc.Draw(outputPath + "allfields_flattened_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -16118,13 +16007,12 @@ flatten individual form fields.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Flattening and removing individual form fields.},label={lis:Flattening-and-removing-1},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void FlattenAndRemoveIndividualField(string resourcePath, string outputPath)
 {
-	MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
-	mergeDoc.Form.Fields[0].Output = FormFieldOutput.Flatten;
-	mergeDoc.Form.Fields[1].Output = FormFieldOutput.Remove;
-	mergeDoc.Draw(outputPath + "individual_fields_flattened_form.pdf");
+  MergeDocument mergeDoc = new MergeDocument(resourcePath + "form.pdf");
+  mergeDoc.Form.Fields[0].Output = FormFieldOutput.Flatten;
+  mergeDoc.Form.Fields[1].Output = FormFieldOutput.Remove;
+  mergeDoc.Draw(outputPath + "individual_fields_flattened_form.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -16154,14 +16042,13 @@ did not fit within Part \ref{part:Create-PDF-Documents} or Part \ref{part:modify
 Core Suite for .NET was developed with customization in mind, and
 in Chapter \ref{chap:custom-components}, you learn how to accomplish this customization. After learning how to create custom controls, you learn how to use Core Suite's layout engine (Chapter \ref{chap:report-layout-data} and Chapter \ref{chap:Creating-Reports-II} ) combined with DynamicPDF Designer (Chapter \ref{chap:dynamicpdf-designer} ) to create PDF reports.
 
-
-
-\part{Other Topics}\label{part:other-topics}
+\DPpart{Other Topics}{part:other-topics}
 \color{white}
 \chapter{Custom Components}\label{chap:custom-components}
 \color{black}
 \BgThispage
-Although DynamicPDF Core Suite for .NET has robust page elements for almost all your needs, you might find a situation where you need to implement your own custom page element component.\marginnote{Creating custom components using PDF operators is a complex task. It is beyond this chapter's scope to cover manually using PDF operators to write a PDF. This chapter is intended as an introduction to show you what is possible and where you can find more information.} Moreover, you can extend most Core Suite base classes including the Document, Page, PageElement, Font, and Resource classes, just to name a few. But of all the classes you can customize, you are most likely to customize the PageElement class or one of its subclasses. In this chapter we limit our ourselves to customizing the PageElement, or one of its child classes.
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{A}{lthough} DynamicPDF Core Suite for .NET has robust page elements for almost all your needs, you might find a situation where you need to implement your own custom page element component.\marginnote{Creating custom components using PDF operators is a complex task. It is beyond this chapter's scope to cover manually using PDF operators to write a PDF. This chapter is intended as an introduction to show you what is possible and where you can find more information.} Moreover, you can extend most Core Suite base classes including the Document, Page, PageElement, Font, and Resource classes, just to name a few. But of all the classes you can customize, you are most likely to customize the PageElement class or one of its subclasses. In this chapter we limit our ourselves to customizing the PageElement, or one of its child classes.
 
 Using DynamicPDF Core Suite for .NET it is possible to produce PDF documents that utilize just almost any PDF feature by extending the appropriate class. Let's examine using the \texttt{PageElement}\index{PageElement} and a couple of its child classes to customize creating a PDF document using Core Suite.
 \section{Page Elements}
@@ -16183,7 +16070,6 @@ In the \texttt{Draw}\index{Draw} method you specify the \texttt{PageWriter}\inde
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A very simple component.},label={lis:custom-label},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.IO;
 
@@ -16212,7 +16098,6 @@ Listing \ref{lis:custom-label} illustrates one way you might fulfill you require
 \end{marginfigure}
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A extended label.},label={lis:custom-label},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.PageElements;
 using System;
@@ -16245,7 +16130,6 @@ Listing \ref{lis:using-readonly-label} illustrates code using the custom label.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using the read-only label.},label={lis:using-readonly-label},basicstyle={\small\ttfamily},breaklines=true]
-
 ReadOnlyCustomLabel readOnly = new ReadOnlyCustomLabel(100, 200);
 doc.Pages[0].Elements.Add(readOnly);
 \end{lstlisting}
@@ -16260,7 +16144,6 @@ Now let's create two custom components. First, we create a custom \texttt{TextAr
 Listing \ref{lis:custom-textarea} illustrates creating a custom \texttt{TextArea}\index{TextArea}. First, you extend the \texttt{TextArea}\index{TextArea} class with your own custom class. Then you create an empty constructor. Next you override the \texttt{Draw}\index{Draw} method with your own implementation. In that method you set the \texttt{PageWriter}\index{PageWriter} instance to text mode and set the font to Courier. You then set the text rendering mode, stroke color, fill color, and leading.  Then you draw the string.  Figure \ref{mar:extended-label} illustrates the component used in a Listing \ref{lis:using-textareal}.
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A custom TextArea.},label={lis:custom-textarea},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.IO;
 using ceTe.DynamicPDF.PageElements;
@@ -16296,7 +16179,6 @@ namespace ChapterExamples.Chapters.ChapterTwentyOne
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using custom TextArea.},label={lis:using-textareal},basicstyle={\small\ttfamily},breaklines=true]
-
 TextAreaStrokeCustomElement textAreaCustom = new("this is a test", 0, 0, doc.Pages[0].Dimensions.Body.Width, doc.Pages[0].Dimensions.Body.Height);
 textAreaCustom.FontSize = 72;
 doc.Pages[1].Elements.Add(textAreaCustom);
@@ -16309,7 +16191,6 @@ Now let's illustrate using the \texttt{TaggablePageElement}\index{TaggablePageEl
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A custom star.},label={lis:custom-star},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.IO;
 using ceTe.DynamicPDF.PageElements;
@@ -16389,7 +16270,6 @@ namespace ChapterExamples.Chapters.ChapterTwentyOne
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using the star.},label={lis:using-star},basicstyle={\small\ttfamily},breaklines=true]
-
 StarCustomElement star = new StarCustomElement(4, 248, 296, 250, 75);
 doc.Pages[0].Elements.Add(star);
 \end{lstlisting}
@@ -16400,7 +16280,6 @@ Of course, when you create a custom component, you need to use it somewhere for 
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Using chapter's custom components.},label={lis:using-custom-star},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 
 namespace ChapterExamples.Chapters.ChapterTwentyOne
@@ -16443,7 +16322,8 @@ Custom page elements require that you understand the PDF operators and use them 
 \chapter{Creating Reports I}\label{chap:report-layout-data}
 \color{black}
 \BgThispage
-In previous chapters, you created PDFs using code or by modifying existing
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} previous chapters, you created PDFs using code or by modifying existing
 PDFs. Here, and in the next two chapters, you'll explore DynamicPDF Designer
 and
 
@@ -16667,7 +16547,6 @@ string with indentation.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Simple data object.},label={lis:Simple-data-object.},basicstyle={\small\ttfamily},breaklines=true]
-
 using System.Text.Json;
 
 namespace ChapterExamples.Chapters.ChapterTwentySeven.Data
@@ -16701,16 +16580,15 @@ a \texttt{Book} instance, as illustrated in Listing \ref{lis:Simple-method-to}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Simple method to create a Book.},label={lis:Simple-method-to},basicstyle={\small\ttfamily},breaklines=true]
-
 private static string CreateABook()
 {
-	Book aBook = new Book();
-	aBook.Title = "Learning The Core Suite By Example";
-	aBook.Author = "James A Brannan";
-	aBook.PublishDate = 2025;
-	aBook.Publisher = "Undetermined";
-	aBook.ImagePath = "cover-image.png";
-	return aBook.getJson();
+  Book aBook = new Book();
+  aBook.Title = "Learning The Core Suite By Example";
+  aBook.Author = "James A Brannan";
+  aBook.PublishDate = 2025;
+  aBook.Publisher = "Undetermined";
+  aBook.ImagePath = "cover-image.png";
+  return aBook.getJson();
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -16719,7 +16597,6 @@ The resulting serialized JSON appears as follows (Listing \ref{lis:A-Book-object
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A Book object serialized into JSON.},label={lis:A-Book-object},basicstyle={\small\ttfamily},breaklines=true]
-
 {
   "Title": "DynamicPDF Core Suite By Example",
   "Author": "James A Brannan",
@@ -16824,7 +16701,6 @@ is the resulting PDF report.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Generating report with simple data.},label={lis:Generating-report-with},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ChapterExamples.Chapters.ChapterTwentySeven.Data;
@@ -16891,7 +16767,6 @@ chapters.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={A Chapter Class used with Book class.},label={lis:A-Chapter-Class},basicstyle={\small\ttfamily},breaklines=true]
-
 namespace ChapterExamples.Chapters.ChapterTwentySeven.Data
 {
     public class Chapter
@@ -16918,7 +16793,6 @@ class to include a collection of \texttt{Chapter} class instances
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Modifying Book class to include a collection of Chapter class instances.},label={lis:Modifying-Book-class},basicstyle={\small\ttfamily},breaklines=true]
-
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -16957,7 +16831,7 @@ is an array of unnamed chapter instances. Each chapter has a \texttt{Title}
 and a \texttt{Summary}.
 
 \bgroup\inputencoding{latin9}
-\begin{lstlisting}[caption={Book JSON modified to include chapters.},label={lis:Book-JSON-modified},basicstyle={\scriptsize\ttfamily},breaklines=true]
+\begin{lstlisting}[caption={Book JSON modified to include chapters.},label={lis:Book-JSON-modified},basicstyle={\small\ttfamily},breaklines=true]
 
 {
   "Title": "DynamicPDF Core Suite By Example",
@@ -17041,7 +16915,6 @@ using JSON, there is no need to add the chapters programmatically.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Creating a book report with chapters.},label={lis:Creating-a-book},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ChapterExamples.Chapters.ChapterTwentySeven.Data;
@@ -17180,7 +17053,6 @@ to ensure compatibility with legacy \texttt{IEnumerable} code.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Chapters implemented as an enumerable object.},label={lis:Chapters-implemented-as},basicstyle={\small\ttfamily},breaklines=true]
-
 using System.Collections;
 using System.Collections.Generic;
 namespace ChapterExamples.Chapters.ChapterTwentySeven.Data
@@ -17264,8 +17136,6 @@ the resulting document (Figure \ref{mar:PDF-report-of}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Providing enumerable report data.},label={lis:Providing-enumerable-report},basicstyle={\small\ttfamily},breaklines=true]
-
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ceTe.DynamicPDF.LayoutEngine.Data;
@@ -17283,16 +17153,14 @@ namespace ChapterExamples.Chapters.ChapterTwentySeven
             for (int i = 1; i < 15; i++)
                 chapters.Add(new Chapter("Chapter " + i, "The summary of chapter " + i + "\n" + TextGenerator.GenerateShort()));
 
-
             DocumentLayout layout = new DocumentLayout(resourcePath + "enumerable-example.dlex");
             EnumerableReportData enumData = new(chapters);
-
              
             LayoutData data = new();
             data.Add("Chapters", enumData);
 
             Document doc = layout.Layout(data);
-            doc.Draw(outputPath + "enumerable-report.pdf");
+            doc.Draw(outputPath + "enum-report.pdf");
         }
     }
 }
@@ -17395,7 +17263,6 @@ instance (Figure \ref{mar:Finished-customers-report.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report using database table.},label={lis:Report-using-database},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ceTe.DynamicPDF.LayoutEngine.Data;
@@ -17509,7 +17376,6 @@ instance, you generate the PDF document (Figure \ref{fig:Order-report.}).
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report from database SQL statement.},label={lis:Report-from-database},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ceTe.DynamicPDF.LayoutEngine.Data;
@@ -17577,8 +17443,8 @@ means of obtaining your DLEX template's data.
 \chapter{Creating Reports II}\label{chap:Creating-Reports-II}
 \color{black}
 \BgThispage
-
-In the last chapter you learned how to create reports using layout
+\vspace{8.00em}
+\lettrine[lines=2,lhang=0.1]{I}{n} the last chapter you learned how to create reports using layout
 data by manually adding data, using JSON data, business objects, and
 data from a database. But all the examples in the last chapter showed
 only single-level reports. Core Suite and Designer can also create
@@ -17668,15 +17534,14 @@ previewing the document in Designer (Figure \ref{fig:Employees-and-territories-2
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report with sub-report using JSON.},label={lis:Report-with-sub-report},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void UsingJson(string resourcePath, string outputPath)
 {
-	string data = File.ReadAllText(resourcePath + "employees-by-id.json");
-	var jsonData = JsonConvert.DeserializeObject(data);
-	DocumentLayout layoutReport = new DocumentLayout(resourcePath + "employees-by-id.dlex");
-	LayoutData layoutData = new LayoutData(jsonData);
-	Document document = layoutReport.Layout(layoutData);
-	document.Draw(outputPath + "subreport-json-output.pdf");
+  string data = File.ReadAllText(resourcePath + "employees-by-id.json");
+  var jsonData = JsonConvert.DeserializeObject(data);
+  DocumentLayout layoutReport = new DocumentLayout(resourcePath + "employees-by-id.dlex");
+  LayoutData layoutData = new LayoutData(jsonData);
+  Document document = layoutReport.Layout(layoutData);
+  document.Draw(outputPath + "subreport-json-output.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -17715,7 +17580,6 @@ from the deserialized data.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={EmployeeTerritory Object.},label={lis:EmployeeTerritory-Object.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ChapterExamples.Utility;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -17779,15 +17643,14 @@ as a PDF file, and the report created matches the report created earlier
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report using business object.},label={lis:Report-using-business},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void UsingBusinessObjects(string resourcePath, string outputPath)
 {
-	DocumentLayout layoutReport = new DocumentLayout(resourcePath + "employees-by-id.dlex");
-	LayoutData layoutData = new LayoutData();
-	List<Employee> employeesData = EmployeeTerritory.GetEmployeesTerritory();
-	layoutData.Add("Employees", employeesData);
-	Document document = layoutReport.Layout(layoutData);
-	document.Draw(resourcePath + "subreport-dataobject-output.pdf");
+  DocumentLayout layoutReport = new DocumentLayout(resourcePath + "employees-by-id.dlex");
+  LayoutData layoutData = new LayoutData();
+  List<Employee> employeesData = EmployeeTerritory.GetEmployeesTerritory();
+  layoutData.Add("Employees", employeesData);
+  Document document = layoutReport.Layout(layoutData);
+  document.Draw(resourcePath + "subreport-dataobject-output.pdf");
 }
 \end{lstlisting}
 \leavevmode\egroup
@@ -17825,32 +17688,31 @@ is the same as the report in Figure \ref{fig:Employees-and-territories-2}.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report using SQL and JSON.},label={lis:Report-using-SQL},basicstyle={\small\ttfamily},breaklines=true]
-
 public static void UsingJsonDb(string resourcePath, string outputPath)
 {
-	string connection = <connection-string>;
-	string sql = "Select Employees.EmployeeID, LastName, FirstName , Territories.TerritoryID," + "Territories.TerritoryDescription from Employees, Territories, EmployeeTerritories " + "where Employees.EmployeeID = EmployeeTerritories.EmployeeID " + "and EmployeeTerritories.TerritoryID = Territories.TerritoryID " + "for JSON auto, root('Employees')";
+  string connection = <connection-string>;
+  string sql = "Select Employees.EmployeeID, LastName, FirstName , Territories.TerritoryID," + "Territories.TerritoryDescription from Employees, Territories, EmployeeTerritories " + "where Employees.EmployeeID = EmployeeTerritories.EmployeeID " + "and EmployeeTerritories.TerritoryID = Territories.TerritoryID " + "for JSON auto, root('Employees')";
     using (var conn = new SqlConnection(connection))
     {
-		using (var cmd = new SqlCommand(sql, conn))
-		{
-    		conn.Open();
-    		var jsonResult = new StringBuilder();
-    		var reader = cmd.ExecuteReader();
-    		if (!reader.HasRows)
-    		{
-				jsonResult.Append("[]");
-    		} else {
-				while (reader.Read()) {
-					jsonResult.Append(reader.GetValue(0).ToString());
-				}
-    		}
-		var jsonData = JsonConvert.DeserializeObject(jsonResult.ToString());
-    	DocumentLayout layoutReport = new DocumentLayout(resourcePath + "employees-by-id.dlex");
-    	LayoutData layoutData = new LayoutData(jsonData);
-    	Document document = layoutReport.Layout(layoutData);
-    	document.Draw(resourcePath + "subreport-sql-output.pdf");
-		}
+    using (var cmd = new SqlCommand(sql, conn))
+    {
+        conn.Open();
+        var jsonResult = new StringBuilder();
+        var reader = cmd.ExecuteReader();
+        if (!reader.HasRows)
+        {
+        jsonResult.Append("[]");
+        } else {
+        while (reader.Read()) {
+          jsonResult.Append(reader.GetValue(0).ToString());
+        }
+        }
+    var jsonData = JsonConvert.DeserializeObject(jsonResult.ToString());
+      DocumentLayout layoutReport = new DocumentLayout(resourcePath + "employees-by-id.dlex");
+      LayoutData layoutData = new LayoutData(jsonData);
+      Document document = layoutReport.Layout(layoutData);
+      document.Draw(resourcePath + "subreport-sql-output.pdf");
+    }
     }
 }
 \end{lstlisting}
@@ -17893,7 +17755,6 @@ specified outputPath, and the PDF is the same as in Figure \ref{fig:Employees-an
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report with subreport.},label={lis:Report-with-subreport.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ceTe.DynamicPDF.LayoutEngine.Data;
@@ -18022,7 +17883,6 @@ Figure \ref{mar:Cover-page-with} illustrates the created report.
 
 \bgroup\inputencoding{latin9}
 \begin{lstlisting}[caption={Report with placeholder.},label={lis:Report-with-placeholder.},basicstyle={\small\ttfamily},breaklines=true]
-
 using ceTe.DynamicPDF;
 using ceTe.DynamicPDF.LayoutEngine;
 using ceTe.DynamicPDF.LayoutEngine.LayoutElements;
@@ -18088,7 +17948,8 @@ and the features it offers for creating reports graphically.
 \chapter{DynamicPDF Designer}\label{chap:dynamicpdf-designer}
 \color{black}
 \BgThispage
-In this chapter, we examine the graphic elements available when using
+\vspace{8.0em}
+\lettrine[lines=2,lhang=0.1]{I}{n} this chapter, we examine the graphic elements available when using
 Designer. This chapter is not intended as a full explanation of Designer,
 as that warrants an entire book. Instead, we examine the primary elements
 in creating a report using Designer. For more information on using
