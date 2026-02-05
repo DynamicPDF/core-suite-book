@@ -1,5 +1,5 @@
 Opening a File
 \begin{marginfigure}
-\protect\includegraphics[scale=0.4]{figures/ch16/fig6}\protect\caption{Opening a file with \texttt{FileOpenAction}\index{FileOpenAction}.}\label{mar:Opening-a-file}
+\includegraphics[scale=0.30]{figures/ch16/fig6}\caption{Opening a file with \texttt{FileOpenAction}\index{FileOpenAction}.}\label{mar:Opening-a-file}
 \end{marginfigure}
 ^^E^^L 

@@ -11,6 +11,12 @@
 \newblock URL
   \url{aws.amazon.com/marketplace/pp/prodview-t6syqoca3u5oe?sr=0-1&ref_=beagle&applicationId=AWSMPContessa}.
 
+\bibitem[ceTe Software(2025)]{brantech123}
+ceTe Software.
+\newblock Dynamicpdf core suite by example book one source code, 2025.
+\newblock URL
+  \url{github.com/jamesabrannan/DynamicPDFCoreSuiteByExampleBookOne}.
+
 \bibitem[{ceTe Software}(n.d.{\natexlab{a}})]{cete125}
 {ceTe Software}.
 \newblock {DynamicPDF} {API}, n.d.{\natexlab{a}}.
@@ -64,17 +70,9 @@ Google.
 \newblock Vernier, Geneva, Switzerland, 2020.
 \newblock URL \url{https://www.iso.org/standard/75839.html}.
 
-\bibitem[LLC(2024)]{brantech123}
-Brannan Technical~Solutions LLC.
-\newblock Dynamicpdf core suite by example book one source code, 2024.
-\newblock URL
-  \url{github.com/jamesabrannan/DynamicPDFCoreSuiteByExampleBookOne}.
-
 \bibitem[Newtonsoft(2024)]{newtonsoft}
 Newtonsoft.
 \newblock Json.net, 2024.
-\newblock URL
-  \url{github.com/jamesabrannan/DynamicPDFCoreSuiteByExampleBookOne}.
 
 \bibitem[veraPDF(n.d.)]{verapdfhome}
 veraPDF.
